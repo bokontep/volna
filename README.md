@@ -19,7 +19,7 @@ Open command prompt
 
 Clone this repository: git clone https://github.com/bokontep/volna.git
 
-Change to awts directory: cd awts
+Change to volna directory: cd volna
 
 Init submodules: git submodule init
 
