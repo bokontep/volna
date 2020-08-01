@@ -1,5 +1,8 @@
 # volna - wavetable touch synthesizer for android
 
+For a prebuilt apk you can install on your android device, go to the releases.
+https://github.com/bokontep/volna/releases/tag/v0.1
+
 волна (pronounced volna in English) means wave in Russian. It is a wavetable synthesizer/musical instrument presented as an android application. I made it in order to test some ideas on audio synthesis and ui interface design.
 It utilises a 10 voice architecture with 2 oscillators per voice. The 2 oscillators are wavetable oscillators. The sound is produced using a table with 256 waveforms of 256 samples each.
 The samples are sine, triangle, square, saw and noise, smootly interpolated and low pass filtered in order to reduce aliasing.
@@ -30,5 +33,6 @@ Now you are ready to build. Open the project with Android Studio (Version 4.0 sh
 #Technical info
 Volna uses the Google oboe library for low latency audio. The GUI is java but all the audio functions are implemented in C++ based on previous work done in my other repositories like
 https://github.com/bokontep/ofsynth
+Currently I test this application on a Xiaomi Mi A2 Lite (It supports pressure!) and a Samsung Galaxy 7 edge (No pressure sensitivity). I would recommend a fairly recent device because the application is quite cpu heavy.
 Maybe someday I will release this on Google Play, who knows...
 Enjoy and as always peace...
