@@ -16,6 +16,9 @@ As you play, a waveform of the currently playing sound is displayed on screen.
 Below you can see an image of the program in action:
 ![Image of volna program in action](./images/volna01.png?raw=true)
 
+And you can see a short demo in this youtube video:
+https://youtu.be/Cf_wpDYhudk
+
 How to download code and compile application:
 
 Open command prompt
