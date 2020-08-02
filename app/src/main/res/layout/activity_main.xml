@@ -233,6 +233,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc1WaveText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -249,6 +250,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc1WaveControlText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -265,6 +267,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc2WaveText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -273,6 +276,7 @@
                 android:id="@+id/osc2WaveSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+
                 android:min="0"
                 android:max="255"/>
             <Space
@@ -282,6 +286,7 @@
                 />
 
             <TextView
+                android:id="@+id/osc2WaveControlText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"

@@ -79,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc2WaveSeekBar;
     private SeekBar osc2WaveControlSeekBar;
     private SeekBar gridSizeSeekBar;
+    private TextView osc1WaveTextView;
+    private TextView osc2WaveTextView;
+    private TextView osc1WaveControlTextView;
+    private TextView osc2WaveControlTextView;
     private int rootNote=36;
     private int xNoteScale = 160;
     private int currentScale = 0;
@@ -215,6 +219,11 @@ public class MainActivity extends AppCompatActivity {
         this.osc2WaveSeekBar = (SeekBar)findViewById(R.id.osc2WaveSeekBar);
         this.osc1WaveControlSeekBar = (SeekBar)findViewById(R.id.osc1WaveControlSeekBar);
         this.osc2WaveControlSeekBar = (SeekBar)findViewById(R.id.osc2WaveControlSeekBar);
+        this.osc1WaveTextView = (TextView)findViewById(R.id.osc1WaveText);
+        this.osc2WaveTextView = (TextView)findViewById(R.id.osc2WaveText);
+        this.osc1WaveControlTextView = (TextView)findViewById(R.id.osc1WaveControlText);
+        this.osc2WaveControlTextView = (TextView)findViewById(R.id.osc2WaveControlText);
+
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -272,18 +281,26 @@ public class MainActivity extends AppCompatActivity {
 
                     case R.id.osc1WaveSeekBar:
                         osc1Wave = progress;
+                        osc1WaveTextView.setText("osc1Wave:"+osc1Wave);
                         prefs.writeInt("osc1Wave",osc1Wave);
+
                         break;
                     case R.id.osc2WaveSeekBar:
                         osc2Wave = progress;
+                        osc2WaveTextView.setText("osc2Wave:"+osc2Wave);
+
                         prefs.writeInt("osc2Wave",osc2Wave);
                         break;
                     case R.id.osc1WaveControlSeekBar:
                         osc1WaveControl = progress;
+                        osc1WaveControlTextView.setText("osc1WaveControl:"+osc1WaveControl);
+
                         prefs.writeInt("osc1WaveControl",osc1WaveControl);
                         break;
                     case R.id.osc2WaveControlSeekBar:
                         osc2WaveControl = progress;
+                        osc2WaveControlTextView.setText("osc2WaveControl:"+osc2WaveControl);
+
                         prefs.writeInt("osc2WaveControl",osc2WaveControl);
                     break;
                     case R.id.gridSizeSeekBar:
