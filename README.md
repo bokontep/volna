@@ -6,7 +6,7 @@ https://github.com/bokontep/volna/releases/tag/v0.1
 волна (pronounced volna in English) means wave in Russian. It is a wavetable synthesizer/musical instrument presented as an android application. I made it in order to test some ideas on audio synthesis and ui interface design.
 It utilises a 10 voice architecture with 2 oscillators per voice. The 2 oscillators are wavetable oscillators. The sound is produced using a table with 256 waveforms of 256 samples each.
 The samples are sine, triangle, square, saw and noise, smootly interpolated and low pass filtered in order to reduce aliasing.
-You can play the instrument simply by touching on the screen. The application supports multitouch and variable pressure (not all phones support pressure though. The screen is presented
+You can play the instrument simply by touching on the screen. The application supports multitouch and variable pressure (not all phones support pressure though!). The screen is presented
 in landscape. By sliding your finger on the x axis you select the pitch, and by sliding your finger on the y axis you select the wavetable and octave. On the lower part of the screen,
 we have lower pitched notes, on the middle, higher pitched notes and on the upper part of the screen we have the highest pitched notes. By long pressing on the upper left part of the screen for five
 seconds the settings menu is displayed. The five second delay is for avoiding to open settings by mistake. On the settings menu, we can select the root note from C0 to B6 and the scale used.
