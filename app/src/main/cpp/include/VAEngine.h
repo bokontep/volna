@@ -92,13 +92,30 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     {
         for(int i=0;i<numvoices;i++)
         {
-            if(voices_notes[i]=note)
+            if(voices_notes[i]==note)
             {
                 mSynthVoice[i].noteSpread(note,spread);
             }
         }
 
     }
+
+    void handleSelectWaveform(uint8_t channel, uint8_t osc, uint8_t note ,uint8_t wave)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            if(voices_notes[i]==note)
+            {
+                if(osc==0)
+                {
+                    mSynthVoice[i].MidiOsc1Wave(wave%256);
+                } else {
+                    mSynthVoice[i].MidiOsc2Wave(wave%256);
+                }
+            }
+        }
+    }
+
 	void handleNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
     {
       //bool found = false;

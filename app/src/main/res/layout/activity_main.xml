@@ -236,6 +236,71 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:text="Oscillator 1 Wave" />
+            <SeekBar
+                android:id="@+id/osc1WaveSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Oscillator 1 Wave Control" />
+            <SeekBar
+                android:id="@+id/osc1WaveControlSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="-255"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Oscillator 2 Wave" />
+            <SeekBar
+                android:id="@+id/osc2WaveSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Oscillator 2 Wave Control" />
+            <SeekBar
+                android:id="@+id/osc2WaveControlSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="-255"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
                 android:text="Grid size" />
 
             <SeekBar

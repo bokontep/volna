@@ -74,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc2SustainSeekBar;
     private SeekBar osc2ReleaseSeekBar;
     private SeekBar maxSpreadSeekBar;
+    private SeekBar osc1WaveSeekBar;
+    private SeekBar osc1WaveControlSeekBar;
+    private SeekBar osc2WaveSeekBar;
+    private SeekBar osc2WaveControlSeekBar;
     private SeekBar gridSizeSeekBar;
     private int rootNote=36;
     private int xNoteScale = 160;
@@ -129,7 +133,11 @@ public class MainActivity extends AppCompatActivity {
         rootNote=prefs.readInt("rootNote",35);
         xNoteScale = prefs.readInt("xNoteScale",160);
         currentScale = prefs.readInt("currentScale",0);
-
+        maxSpread = prefs.readInt("maxSpread",0);
+        osc1Wave = prefs.readInt("osc1Wave",0);
+        osc2Wave = prefs.readInt("osc2Wave", 0);
+        osc1WaveControl = prefs.readInt("osc1WaveControl",255);
+        osc2WaveControl = prefs.readInt("osc2WaveControl",255);
         rootNoteStr = this.midiNoteToString(rootNote);
 
         setContentView(R.layout.activity_main);
@@ -203,6 +211,10 @@ public class MainActivity extends AppCompatActivity {
         this.maxSpreadSeekBar.setProgress(this.maxSpread);
         this.gridSizeSeekBar = (SeekBar)findViewById(R.id.gridSizeSeekBar);
         this.gridSizeSeekBar.setProgress(this.xNoteScale);
+        this.osc1WaveSeekBar = (SeekBar)findViewById(R.id.osc1WaveSeekBar);
+        this.osc2WaveSeekBar = (SeekBar)findViewById(R.id.osc2WaveSeekBar);
+        this.osc1WaveControlSeekBar = (SeekBar)findViewById(R.id.osc1WaveControlSeekBar);
+        this.osc2WaveControlSeekBar = (SeekBar)findViewById(R.id.osc2WaveControlSeekBar);
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -257,6 +269,23 @@ public class MainActivity extends AppCompatActivity {
                         maxSpread = progress;
                         prefs.writeInt("maxSpread",maxSpread);
                         break;
+
+                    case R.id.osc1WaveSeekBar:
+                        osc1Wave = progress;
+                        prefs.writeInt("osc1Wave",osc1Wave);
+                        break;
+                    case R.id.osc2WaveSeekBar:
+                        osc2Wave = progress;
+                        prefs.writeInt("osc2Wave",osc2Wave);
+                        break;
+                    case R.id.osc1WaveControlSeekBar:
+                        osc1WaveControl = progress;
+                        prefs.writeInt("osc1WaveControl",osc1WaveControl);
+                        break;
+                    case R.id.osc2WaveControlSeekBar:
+                        osc2WaveControl = progress;
+                        prefs.writeInt("osc2WaveControl",osc2WaveControl);
+                    break;
                     case R.id.gridSizeSeekBar:
                         xNoteScale = progress;
                         prefs.writeInt("xNoteScale",xNoteScale);
@@ -285,7 +314,11 @@ public class MainActivity extends AppCompatActivity {
         this.osc2SustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2ReleaseSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.maxSpreadSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
-        this.gridSizeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener)                                                                                                                                                                                                                                                                                      ;
+        this.gridSizeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);                                                                                                                                                                                                                                                                                      ;
+        this.osc1WaveSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.osc2WaveSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.osc1WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.osc2WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
 
         findViewById(R.id.closeSettingsButton).setOnClickListener(
                 new View.OnClickListener() {
@@ -526,10 +559,18 @@ public class MainActivity extends AppCompatActivity {
             scopetext = scopetext+"["+oscdist+"]";
             int midinote = (rootNote  + ((int) x[i] / xNoteScale)) % 128;
             midinote = (transformNote(midinote)+offset)%128;
+            int factor = (int) height/3;
+            int waveform1 =  (this.osc1Wave + (int)((int)y[i]%factor)*this.osc1WaveControl)%256;
+            int waveform2 =  (this.osc2Wave + (int)((int)y[i]%factor)*this.osc2WaveControl)%256;
+            selectWaveform(0,0,midinote,waveform1);
+            selectWaveform(0,1,midinote,waveform2);
+            /*
             int waveform = ((int) (y[i] * 1.1f)) % 256;
+
             sendMidiCC(0, 16, waveform);
             sendMidiCC(0, 17, waveform);
 
+             */
             int tmp=((int)(127.0*event.getPressure(i)*4));
             vel=tmp>127?127:tmp;
             scopetext=scopetext+" "+midinote;
@@ -556,6 +597,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 sendMidiNoteOn(0, midinote, vel);
+                selectWaveform(0,0,midinote,waveform1);
+                selectWaveform(0,1,midinote,waveform2);
                 lastnote = midinote;
                 notemap.put(id, lastnote);
 
@@ -588,6 +631,8 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     sendMidiNoteOn(0, midinote, vel);
+                    selectWaveform(0,0,midinote,waveform1);
+                    selectWaveform(0,1,midinote,waveform2);
                     lastnote = midinote;
                     notemap.put(id, lastnote);
                 }
@@ -638,6 +683,7 @@ public class MainActivity extends AppCompatActivity {
     public native int sendMidiNoteOn(int channel, int note, int velocity );
     public native int sendMidiNoteOff(int channel, int note, int velocity );
     public native int sendMidiNoteSpread(int channel, int note, int spread);
+    public native int selectWaveform(int channel, int osc, int note,  int wave);
     public native float[] getWaveform();
     public long enterSettings;
     private int osc1Volume = 127;
@@ -651,6 +697,11 @@ public class MainActivity extends AppCompatActivity {
     private int osc2Sustain = 127;
     private int osc2Release = 0;
     private int maxSpread = 0;
+    private int osc1Wave = 0;
+    private int osc1WaveControl = 0;
+    private int osc2Wave = 0;
+    private int osc2WaveControl = 0;
+
     private long settingsPressTime=5000;
     private String rootNoteStr = "";
 }

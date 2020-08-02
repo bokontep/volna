@@ -259,3 +259,12 @@ Java_org_bokontep_wavesynth_MainActivity_getWaveform(JNIEnv* env, jobject thiz)
     return result;
 
 }
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_MainActivity_selectWaveform(JNIEnv *env, jobject thiz, jint channel,
+                                                        jint osc, jint note, jint wave) {
+    // TODO: implement selectWaveform()
+    engine->handleSelectWaveform(channel, osc, note, wave);
+    return 0;
+}
