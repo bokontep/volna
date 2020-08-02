@@ -202,6 +202,8 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiCC(JNIEnv *env,
     return 0;
 }
 
+
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOn(
@@ -229,6 +231,14 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOff(
 {
 // TODO: implement sendMidiNoteOff()
     engine->handleNoteOff((uint8_t)channel,(uint8_t)note, (uint8_t)velocity);
+    return 0;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteSpread(JNIEnv *env, jobject thiz, jint channel,
+                                                            jint note, jint spread) {
+    engine->handleNoteSpread(channel,note, spread);
+    // TODO: implement sendMidiNoteSpread()
     return 0;
 }
 

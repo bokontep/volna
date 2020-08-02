@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">волна</string>
-    <string name="osc_1_attack">"Osc 1 Attack "</string>
+    <string name="osc_1_attack">Osc 1 Attack</string>
     <string name="osc_1_decay">Osc 1 Decay</string>
     <string name="osc_1_sustain">Osc 1 Sustain</string>
     <string name="osc_1_release">Osc 1 Release</string>

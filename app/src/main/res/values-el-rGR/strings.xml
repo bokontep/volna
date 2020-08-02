@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">волна</string>
-    <string name="osc_1_attack">"Osc 1 Attack "</string>
+    <string name="osc_1_attack">Osc 1 Attack</string>
     <string name="osc_1_decay">Osc 1 Decay</string>
     <string name="osc_1_sustain">Osc 1 Sustain</string>
     <string name="osc_1_release">Osc 1 Release</string>
@@ -8,6 +9,6 @@
     <string name="osc_2_decay">Osc 2 Decay</string>
     <string name="osc_2_sustain">Osc 2 Sustain</string>
     <string name="osc_2_release">Osc 2 Release</string>
-    <string name="root_note">Root Note</string>
-    <string name="scale">Scale</string>
+    <string name="root_note">Βασική Νότα</string>
+    <string name="scale">Κλίμακα</string>
 </resources>

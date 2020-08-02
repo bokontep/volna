@@ -50,7 +50,7 @@ public:
     {
         
         float f = pow(2.0,(note*1.0-69.0)/tet)*tune;
-        velocity = vel/128.0; 
+        velocity = vel/127.0;
         freq1 = f;
         freq2 = f;
         osc[0].SetFrequency(freq1,sampleRate);
@@ -116,6 +116,16 @@ public:
     void SetFmod3(uint8_t fmod)
     {
       this->fmod3 = fmod/64;
+    }
+    void noteSpread( uint8_t note, uint8_t spread)
+    {
+        float factor = pow(2.0,1.0/12.0)/127;
+        float bendfreq1 = freq1+freq1*factor*(spread-63)/63;
+        float bendfreq2 = freq2-freq2*factor*(spread-63)/63;
+
+        osc[0].SetFrequency(bendfreq1,sampleRate);
+        osc[1].SetFrequency(bendfreq2,sampleRate);
+
     }
     void MidiBend(int bend)
     {
@@ -313,7 +323,9 @@ public:
 			  }
 
 			  break;
+
       }
+
       //AudioInterrupts();
     }
     void MidiMod(uint8_t newmod)

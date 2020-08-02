@@ -88,7 +88,17 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	  //return s;
 	  
     }
-    
+    void handleNoteSpread(uint8_t channel, uint8_t note, uint8_t spread)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            if(voices_notes[i]=note)
+            {
+                mSynthVoice[i].noteSpread(note,spread);
+            }
+        }
+
+    }
 	void handleNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
     {
       //bool found = false;
