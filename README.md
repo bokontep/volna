@@ -33,7 +33,7 @@ Fetch submodules: git submodule update
 
 Now you are ready to build. Open the project with Android Studio (Version 4.0 should work) and build your project. You should have NDK installed.
 
-#Technical info
+# Technical info
 Volna uses the Google oboe library for low latency audio. The GUI is java but all the audio functions are implemented in C++ based on previous work done in my other repositories like
 https://github.com/bokontep/ofsynth
 Currently I test this application on a Xiaomi Mi A2 Lite (It supports pressure!) and a Samsung Galaxy 7 edge (No pressure sensitivity). I would recommend a fairly recent device because the application is quite cpu heavy.
