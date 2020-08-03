@@ -86,8 +86,8 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       }
        return s/(numvoices>>1);
 	  //return s;
-	  
     }
+
     void handleNoteSpread(uint8_t channel, uint8_t note, uint8_t spread)
     {
         for(int i=0;i<numvoices;i++)
@@ -99,6 +99,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         }
 
     }
+
 	void handleNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
     {
       //bool found = false;
