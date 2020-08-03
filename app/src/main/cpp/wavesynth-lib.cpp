@@ -13,6 +13,7 @@ VAEngine<POLYPHONY,WTCOUNT,WTLEN>* engine;
 float Waveforms[WTCOUNT*WTLEN];
 std::mt19937 eng{std::random_device()()};
 float wavedata[256];
+float data[256];
 int index = 0;
 void initWaveforms(bool bandlimit,float freq,float q)
 {
@@ -248,14 +249,14 @@ Java_org_bokontep_wavesynth_MainActivity_getWaveform(JNIEnv* env, jobject thiz)
 {
     jfloatArray result;
     result = (*env).NewFloatArray(256);
-    float* data;
-    data=(float*)malloc(sizeof(float)*256);
+    //float* data;
+    //data=(float*)malloc(sizeof(float)*256);
     for(int i=0;i<256;i++)
     {
         data[i] = engine->getWavedata()[i];
     }
     (*env).SetFloatArrayRegion(result,0,256,data);
-    free(data);
+    //free(data);
     return result;
 
 }
