@@ -92,7 +92,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     {
         for(int i=0;i<numvoices;i++)
         {
-            if(voices_notes[i]=note)
+            if(voices_notes[i]==note)
             {
                 mSynthVoice[i].noteSpread(note,spread);
             }
