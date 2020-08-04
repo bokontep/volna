@@ -84,7 +84,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       {
         s = s + (mSynthVoice[i].Process() );
       }
-       return s/(numvoices>>1);
+       return s/((float)numvoices);
 	  //return s;
 	  
     }

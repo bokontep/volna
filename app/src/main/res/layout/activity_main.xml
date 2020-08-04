@@ -12,7 +12,7 @@
         android:id="@+id/mscope"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="0.5"
         >
 
     </org.bokontep.wavesynth.Scope>
@@ -77,6 +77,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc1AttackText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -94,6 +95,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc1DecayText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -111,6 +113,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc1SustainText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -128,6 +131,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc1ReleaseText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -146,6 +150,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc2AttackText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -163,6 +168,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc2DecayText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -180,6 +186,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc2SustainText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -197,6 +204,7 @@
 
                 />
             <TextView
+                android:id="@+id/osc2ReleaseText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
@@ -215,6 +223,7 @@
 
                 />
             <TextView
+                android:id="@+id/oscSpreadText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"

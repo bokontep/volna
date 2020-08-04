@@ -79,6 +79,17 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc2WaveSeekBar;
     private SeekBar osc2WaveControlSeekBar;
     private SeekBar gridSizeSeekBar;
+    private TextView osc1AttackTextView;
+    private TextView osc1DecayTextView;
+    private TextView osc1SustainTextView;
+    private TextView osc1ReleaseTextView;
+    private TextView osc2AttackTextView;
+    private TextView osc2DecayTextView;
+    private TextView osc2SustainTextView;
+    private TextView osc2ReleaseTextView;
+    private TextView oscSpreadTextView;
+
+
     private TextView osc1WaveTextView;
     private TextView osc2WaveTextView;
     private TextView osc1WaveControlTextView;
@@ -216,13 +227,40 @@ public class MainActivity extends AppCompatActivity {
         this.gridSizeSeekBar = (SeekBar)findViewById(R.id.gridSizeSeekBar);
         this.gridSizeSeekBar.setProgress(this.xNoteScale);
         this.osc1WaveSeekBar = (SeekBar)findViewById(R.id.osc1WaveSeekBar);
+        this.osc1WaveSeekBar.setProgress(osc1Wave);
         this.osc2WaveSeekBar = (SeekBar)findViewById(R.id.osc2WaveSeekBar);
+        this.osc2WaveSeekBar.setProgress(osc2Wave);
         this.osc1WaveControlSeekBar = (SeekBar)findViewById(R.id.osc1WaveControlSeekBar);
+        this.osc1WaveControlSeekBar.setProgress(osc1WaveControl);
         this.osc2WaveControlSeekBar = (SeekBar)findViewById(R.id.osc2WaveControlSeekBar);
+        this.osc2WaveControlSeekBar.setProgress(osc2WaveControl);
+        this.osc1AttackTextView = (TextView)findViewById(R.id.osc1AttackText);
+        this.osc1AttackTextView.setText("osc1Attack:"+osc1Attack);
+        this.osc1DecayTextView = (TextView)findViewById(R.id.osc1DecayText);
+        this.osc1DecayTextView.setText("osc1Decay:"+osc1Decay);
+        this.osc1SustainTextView = (TextView)findViewById(R.id.osc1SustainText);
+        this.osc1SustainTextView.setText("osc1Sustain:"+osc1Sustain);
+        this.osc1ReleaseTextView = (TextView)findViewById(R.id.osc1ReleaseText);
+        this.osc1ReleaseTextView.setText("osc1Release:"+osc1Release);
+        this.osc2AttackTextView = (TextView)findViewById(R.id.osc2AttackText);
+        this.osc2AttackTextView.setText("osc2Attack:"+osc2Attack);
+        this.osc2DecayTextView = (TextView)findViewById(R.id.osc2DecayText);
+        this.osc2DecayTextView.setText("osc2Decay:"+osc2Decay);
+        this.osc2SustainTextView = (TextView)findViewById(R.id.osc2SustainText);
+        this.osc2SustainTextView.setText("osc2Sustain:"+osc2Sustain);
+        this.osc2ReleaseTextView = (TextView)findViewById(R.id.osc2ReleaseText);
+        this.osc2ReleaseTextView.setText("osc2Release:"+osc2Release);
+
+        this.oscSpreadTextView = (TextView)findViewById(R.id.oscSpreadText);
+        this.oscSpreadTextView.setText("oscSpread:"+maxSpread);
         this.osc1WaveTextView = (TextView)findViewById(R.id.osc1WaveText);
+        this.osc1WaveTextView.setText("osc1Wave:"+osc1Wave);
         this.osc2WaveTextView = (TextView)findViewById(R.id.osc2WaveText);
+        this.osc2WaveTextView.setText("osc2Wave:"+osc2Wave);
         this.osc1WaveControlTextView = (TextView)findViewById(R.id.osc1WaveControlText);
+        this.osc1WaveControlTextView.setText("osc1WaveControl:"+osc1WaveControl);
         this.osc2WaveControlTextView = (TextView)findViewById(R.id.osc2WaveControlText);
+        this.osc2WaveControlTextView.setText("osc2WaveControl:"+osc2WaveControl);
 
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -233,49 +271,59 @@ public class MainActivity extends AppCompatActivity {
                 {
                     case R.id.osc1AttackSeekBar:
                         osc1Attack = progress;
+                        osc1AttackTextView.setText("osc1Attack:"+osc1Attack);
                         prefs.writeInt("osc1Attack",osc1Attack);
                         sendMidiCC(0,18,osc1Attack);
                         break;
                     case R.id.osc1DecaySeekBar:
                         osc1Decay = progress;
+                        osc1DecayTextView.setText("osc1Decay:"+osc1Decay);
                         prefs.writeInt("osc1Decay",osc1Decay);
                         sendMidiCC(0,19,osc1Decay);
                         break;
                     case R.id.osc1SustainSeekBar:
                         osc1Sustain = progress;
+                        osc1SustainTextView.setText("osc1Sustain:"+osc1Sustain);
                         prefs.writeInt("osc1Sustain",osc1Sustain);
                         sendMidiCC(0,20,osc1Sustain);
                         break;
                     case R.id.osc1ReleaseSeekBar:
                         osc1Release = progress;
+                        osc1ReleaseTextView.setText("osc1Release:"+osc1Release);
                         prefs.writeInt("osc1Release",osc1Release);
                         sendMidiCC(0,21,osc1Release);
                         break;
                     case R.id.osc2AttackSeekBar:
                         osc2Attack = progress;
+                        osc2AttackTextView.setText("osc2Attack:"+osc2Attack);
                         prefs.writeInt("osc2Attack",osc2Attack);
                         sendMidiCC(0,22,osc2Attack);
                         break;
                     case R.id.osc2DecaySeekBar:
                         osc2Decay = progress;
+                        osc2DecayTextView.setText("osc2Decay:"+osc2Decay);
                         prefs.writeInt("osc2Decay",osc2Decay);
 
                         sendMidiCC(0,23,osc2Decay);
                         break;
                     case R.id.osc2SustainSeekBar:
                         osc2Sustain = progress;
+                        osc2SustainTextView.setText("osc2Sustain:"+osc2Sustain);
                         prefs.writeInt("osc2Sustain",osc2Sustain);
+
 
                         sendMidiCC(0,24,osc2Sustain);
                         break;
                     case R.id.osc2ReleaseSeekBar:
                         osc2Release = progress;
+                        osc2ReleaseTextView.setText("osc2Release:"+osc2Release);
                         prefs.writeInt("osc2Release",osc2Release);
 
                         sendMidiCC(0,25,osc2Release);
                         break;
                     case R.id.maxSpreadSeekBar:
                         maxSpread = progress;
+                        oscSpreadTextView.setText("oscSpread:"+maxSpread);
                         prefs.writeInt("maxSpread",maxSpread);
                         break;
 
@@ -356,12 +404,8 @@ public class MainActivity extends AppCompatActivity {
                 mHandler.postDelayed(screenUpdater,updateInterval);
             }
         };
-        mHandler.postDelayed(screenUpdater,updateInterval);
-        // Example of a call to a native method
-        //TextView tv = findViewById(R.id.sample_text);
-        //tv.setText(stringFromJNI());
-        //View v = (View)findViewById(R.id.wave_canvas);
-        //scope.setText();
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
             AudioManager myAudioMgr = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
             String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -383,6 +427,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+        mHandler.postDelayed(screenUpdater,updateInterval);
 
     }
     public String midiNoteToString(int note)
@@ -560,7 +605,7 @@ public class MainActivity extends AppCompatActivity {
 
         String scopetext = rootNoteStr+" "+scaleNames[currentScale]+" notes:";
         int offset = 0;
-        Log.d("TEST","x="+x+" y="+y);
+        //Log.d("TEST","x="+x+" y="+y);
         lastnote=-1;
         for(int i=0;i<activepointers;i++) {
 
@@ -577,8 +622,10 @@ public class MainActivity extends AppCompatActivity {
             int midinote = (rootNote  + ((int) x[i] / xNoteScale)) % 128;
             midinote = (transformNote(midinote)+offset)%128;
             int factor = (int) height/3;
-            int waveform1 =  (this.osc1Wave + (int)((int)y[i]%factor)*this.osc1WaveControl)%256;
-            int waveform2 =  (this.osc2Wave + (int)((int)y[i]%factor)*this.osc2WaveControl)%256;
+            int wi = (int)y[i]%factor;
+
+            int waveform1 =  (this.osc1Wave + (wi*this.osc1WaveControl)/factor)%256;
+            int waveform2 =  (this.osc2Wave + (wi*this.osc2WaveControl)/factor)%256;
             selectWaveform(0,0,midinote,waveform1);
             selectWaveform(0,1,midinote,waveform2);
             /*

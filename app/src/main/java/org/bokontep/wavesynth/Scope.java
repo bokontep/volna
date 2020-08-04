@@ -68,6 +68,7 @@ public class Scope extends View {
     }
     public void setData(float[] newData)
     {
+
         data = newData;
     }
     public void setText(String text)
@@ -97,7 +98,7 @@ public class Scope extends View {
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        int count = canvas.getWidth()/xNoteScale+1;
+        int count = getWidth()/xNoteScale+1;
         if(data==null)
         {
             return;
@@ -151,7 +152,7 @@ public class Scope extends View {
             xstart = (int)0f;
             ystart = (int)(h/2.0f);
         }
-        Log.d("INFO","ViewSize=("+w+","+h+") xstep="+xstep+" ystep="+ystep+" xstart="+xstart+"ystart="+ystart);
+        //Log.d("INFO","ViewSize=("+w+","+h+") xstep="+xstep+" ystep="+ystep+" xstart="+xstart+"ystart="+ystart);
     }
 
 }

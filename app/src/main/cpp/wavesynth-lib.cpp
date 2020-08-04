@@ -7,7 +7,7 @@
 #include <oboe/Oboe.h>
 #define WTLEN 256
 #define WTCOUNT 256
-#define PI 3.1415923
+
 #define POLYPHONY 10
 VAEngine<POLYPHONY,WTCOUNT,WTLEN>* engine;
 float Waveforms[WTCOUNT*WTLEN];
@@ -27,7 +27,7 @@ void initWaveforms(bool bandlimit,float freq,float q)
     float max = 0.8;
     for (int i = 0; i < WTLEN; i++)
     {
-        sintable[i] = max*sin(2.0 * (PI / (float)WTLEN) * i);
+        sintable[i] = max*sin(2.0 * (M_PI / (float)WTLEN) * i);
 
 
     }
@@ -216,7 +216,6 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOn(
 )
 {
     engine->handleNoteOn((uint8_t)channel,(uint8_t)note, (uint8_t)velocity);
-// TODO: implement sendMidiNoteOn()
 return 0;
 }
 
@@ -230,7 +229,6 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOff(
         jint velocity
 )
 {
-// TODO: implement sendMidiNoteOff()
     engine->handleNoteOff((uint8_t)channel,(uint8_t)note, (uint8_t)velocity);
     return 0;
 }
@@ -239,7 +237,7 @@ JNIEXPORT jint JNICALL
 Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteSpread(JNIEnv *env, jobject thiz, jint channel,
                                                             jint note, jint spread) {
     engine->handleNoteSpread(channel,note, spread);
-    // TODO: implement sendMidiNoteSpread()
+
     return 0;
 }
 
