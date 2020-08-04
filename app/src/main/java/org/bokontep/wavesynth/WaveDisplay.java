@@ -38,7 +38,7 @@ public class WaveDisplay extends View {
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawRect(0,0,w,h,this.drawPaintForeground);
+        //        canvas.drawRect(0,0,w,h,this.drawPaintForeground);
         if(data == null)
         {
             return;

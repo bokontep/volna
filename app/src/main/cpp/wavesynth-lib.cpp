@@ -267,3 +267,28 @@ Java_org_bokontep_wavesynth_MainActivity_selectWaveform(JNIEnv *env, jobject thi
     engine->handleSelectWaveform(channel, osc, note, wave);
     return 0;
 }
+
+extern "C"
+JNIEXPORT jfloatArray JNICALL
+Java_org_bokontep_wavesynth_MainActivity_getWavetable(JNIEnv *env, jobject thiz, jint index) {
+    jfloatArray result;
+    result = (*env).NewFloatArray(256);
+
+    (*env).SetFloatArrayRegion(result,0,256,&Waveforms[index*WTLEN]);
+
+    return result;
+
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_MainActivity_setWavetable(JNIEnv *env, jobject thiz, jint index,
+                                                      jfloatArray wavetable) {
+    jfloat * w = env->GetFloatArrayElements(wavetable,0);
+    for(int i=0;i<WTLEN;i++)
+    {
+        Waveforms[index*WTLEN+i] = w[i];
+    }
+    env->ReleaseFloatArrayElements(wavetable,w,0);
+return 0;
+}

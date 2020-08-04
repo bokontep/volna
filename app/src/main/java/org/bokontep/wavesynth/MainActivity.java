@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView osc2SustainTextView;
     private TextView osc2ReleaseTextView;
     private TextView oscSpreadTextView;
-
+    private WaveDisplay osc1WaveDisplay;
+    private WaveDisplay osc2WaveDisplay;
 
     private TextView osc1WaveTextView;
     private TextView osc2WaveTextView;
@@ -127,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
                     "whole half",
                     "half whole"
             };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -135,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
         prefs = new AppPreferences(this);
+        initAudio();
         osc1Volume = prefs.readInt("osc1Volume",127);
         osc2Volume = prefs.readInt("osc2Volume",127);
         osc1Attack = prefs.readInt("osc1Attack",10);
@@ -261,7 +265,12 @@ public class MainActivity extends AppCompatActivity {
         this.osc1WaveControlTextView.setText("osc1WaveControl:"+osc1WaveControl);
         this.osc2WaveControlTextView = (TextView)findViewById(R.id.osc2WaveControlText);
         this.osc2WaveControlTextView.setText("osc2WaveControl:"+osc2WaveControl);
-
+        this.osc1WaveDisplay = (WaveDisplay)findViewById(R.id.osc1WaveDisplay);
+        this.osc1WaveDisplay.setData(this.getWavetable(osc1Wave));
+        this.osc1WaveDisplay.invalidate();
+        this.osc2WaveDisplay = (WaveDisplay)findViewById(R.id.osc2WaveDisplay);
+        this.osc2WaveDisplay.setData(this.getWavetable(osc2Wave));
+        this.osc2WaveDisplay.invalidate();
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -329,14 +338,19 @@ public class MainActivity extends AppCompatActivity {
 
                     case R.id.osc1WaveSeekBar:
                         osc1Wave = progress;
+                        osc1WaveDisplay.setData(getWavetable(osc1Wave));
+
                         osc1WaveTextView.setText("osc1Wave:"+osc1Wave);
+                        osc1WaveDisplay.invalidate();
                         prefs.writeInt("osc1Wave",osc1Wave);
 
                         break;
                     case R.id.osc2WaveSeekBar:
                         osc2Wave = progress;
-                        osc2WaveTextView.setText("osc2Wave:"+osc2Wave);
+                        osc2WaveDisplay.setData(getWavetable(osc2Wave));
 
+                        osc2WaveTextView.setText("osc2Wave:"+osc2Wave);
+                        osc2WaveDisplay.invalidate();
                         prefs.writeInt("osc2Wave",osc2Wave);
                         break;
                     case R.id.osc1WaveControlSeekBar:
@@ -406,6 +420,12 @@ public class MainActivity extends AppCompatActivity {
         };
 
 
+
+        mHandler.postDelayed(screenUpdater,updateInterval);
+
+    }
+    public void initAudio()
+    {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
             AudioManager myAudioMgr = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
             String sampleRateStr = myAudioMgr.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
@@ -427,8 +447,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-        mHandler.postDelayed(screenUpdater,updateInterval);
-
     }
     public String midiNoteToString(int note)
     {
@@ -558,7 +576,7 @@ public class MainActivity extends AppCompatActivity {
 
             this.rootNote = 12*octave+note;
             rootNoteStr = midiNoteToString(this.rootNote);
-            prefs.writeInt("this.rootNote",this.rootNote);
+            prefs.writeInt("rootNote",this.rootNote);
 
         }
     }
@@ -749,12 +767,15 @@ public class MainActivity extends AppCompatActivity {
     public native int sendMidiNoteSpread(int channel, int note, int spread);
     public native int selectWaveform(int channel, int osc, int note,  int wave);
     public native float[] getWaveform();
+    public native float[] getWavetable(int index);
+    public native int setWavetable(int index, float[] wavetable);
     public long enterSettings;
     private int osc1Volume = 127;
     private int osc2Volume = 127;
     private int osc1Attack = 10;
     private int osc1Decay = 0;
     private int osc1Sustain = 127;
+
     private int osc1Release = 0;
     private int osc2Attack = 10;
     private int osc2Decay = 0;

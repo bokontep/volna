@@ -258,6 +258,11 @@
                 android:layout_height="20dp"
 
                 />
+            <org.bokontep.wavesynth.WaveDisplay
+                android:id="@+id/osc1WaveDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"/>
+
             <TextView
                 android:id="@+id/osc1WaveControlText"
                 android:layout_width="match_parent"
@@ -281,6 +286,11 @@
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
                 android:text="Oscillator 2 Wave" />
+            <org.bokontep.wavesynth.WaveDisplay
+                android:id="@+id/osc2WaveDisplay"
+                android:layout_width="match_parent"
+                android:layout_height="50pt"/>
+
             <SeekBar
                 android:id="@+id/osc2WaveSeekBar"
                 android:layout_width="match_parent"

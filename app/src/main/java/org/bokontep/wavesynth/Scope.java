@@ -5,17 +5,14 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
-import java.util.HashMap;
-
 public class Scope extends View {
-    private final int blackColor = Color.GREEN;
-    private final int whiteColor = Color.BLACK;
+    private final int foregroundColor = Color.GREEN;
+    private final int backgroundColor = Color.BLACK;
     // defines paint and canvas
-    private Paint drawPaintBlack;
-    private Paint drawPaintWhite;
+    private Paint drawPaintForeground;
+    private Paint drawPaintBackground;
     private Paint markerPaint;
     private float[] data;
     private String text;
@@ -46,25 +43,25 @@ public class Scope extends View {
     private void setupPaint()
     {
         markerPaint = new Paint();
-        markerPaint.setColor(blackColor);
+        markerPaint.setColor(foregroundColor);
         markerPaint.setStrokeWidth(8);
         markerPaint.setStyle(Paint.Style.STROKE);
 
-        drawPaintBlack = new Paint();
-        drawPaintBlack.setColor(blackColor);
-        drawPaintBlack.setAntiAlias(true);
-        drawPaintBlack.setStrokeWidth(4);
-        drawPaintBlack.setStyle(Paint.Style.FILL_AND_STROKE);
+        drawPaintForeground = new Paint();
+        drawPaintForeground.setColor(foregroundColor);
+        drawPaintForeground.setAntiAlias(true);
+        drawPaintForeground.setStrokeWidth(4);
+        drawPaintForeground.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        drawPaintBlack.setTextSize(44);
+        drawPaintForeground.setTextSize(44);
 
-        drawPaintWhite = new Paint();
-        drawPaintWhite.setColor(whiteColor);
-        drawPaintWhite.setAntiAlias(true);
-        drawPaintWhite.setStrokeWidth(4);
-        drawPaintWhite.setStyle(Paint.Style.FILL_AND_STROKE);
+        drawPaintBackground = new Paint();
+        drawPaintBackground.setColor(backgroundColor);
+        drawPaintBackground.setAntiAlias(true);
+        drawPaintBackground.setStrokeWidth(4);
+        drawPaintBackground.setStyle(Paint.Style.FILL_AND_STROKE);
 
-        drawPaintWhite.setTextSize(44);
+        drawPaintBackground.setTextSize(44);
     }
     public void setData(float[] newData)
     {
@@ -111,26 +108,29 @@ public class Scope extends View {
                 {
 
                     canvas.drawCircle(x_vals[i],y_vals[i],130,markerPaint);
-                    canvas.drawText(markers[i],x_vals[i],y_vals[i],drawPaintBlack);
+                    canvas.drawText(markers[i],x_vals[i],y_vals[i], drawPaintForeground);
                 }
             }
         }
-        canvas.drawLine(0,0,w,0,drawPaintBlack);
-        canvas.drawLine(0,h,w,h,drawPaintBlack);
-        canvas.drawLine(0,0,0,h,drawPaintBlack);
-        canvas.drawLine(w,0,w,h,drawPaintBlack);
+        canvas.drawLine(0,0,w,0, drawPaintForeground);
+        canvas.drawLine(0,h,w,h, drawPaintForeground);
+        canvas.drawLine(0,0,0,h, drawPaintForeground);
+        canvas.drawLine(w,0,w,h, drawPaintForeground);
         for(int i=0;i<count;i++)
         {
-            canvas.drawLine(i*xNoteScale,0,i*xNoteScale,h,drawPaintBlack);
+            canvas.drawLine(i*xNoteScale,0,i*xNoteScale,h, drawPaintForeground);
         }
+
         for(int i=0;i<data.length-1;i++)
         {
 
-            canvas.drawLine(xstart + i*xstep,ystart-ystep*data[i],xstart+((i+1)*xstep),ystart-ystep*data[i+1],drawPaintBlack);
+            canvas.drawLine(xstart + i*xstep,ystart-ystep*data[i],xstart+((i+1)*xstep),ystart-ystep*data[i+1], drawPaintForeground);
         }
-        canvas.drawArc(0f,500f,100f,600f,0,settingsPercentage*360,true,drawPaintBlack);
+
+
+        canvas.drawArc(0f,500f,100f,600f,0,settingsPercentage*360,true, drawPaintForeground);
         if(text!=null) {
-            canvas.drawText(text, 30, 65, drawPaintBlack);
+            canvas.drawText(text, 30, 65, drawPaintForeground);
         }
     }
 
@@ -141,14 +141,14 @@ public class Scope extends View {
         this.h = h;
         if(data!=null) {
             xstep = (int)(w / data.length);
-            ystep = (int)(h/4.0f);
+            ystep = (int)(h/2.0f);
             xstart = (int)0;
             ystart = (int)(h/2.0f);
         }
         else
         {
             xstep = (int)(w / 256.0f);
-            ystep = (int)(h/4.0f);
+            ystep = (int)(h/2.0f);
             xstart = (int)0f;
             ystart = (int)(h/2.0f);
         }
