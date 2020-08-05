@@ -267,10 +267,10 @@ public class MainActivity extends AppCompatActivity {
         this.osc2WaveControlTextView.setText("osc2WaveControl:"+osc2WaveControl);
         this.osc1WaveDisplay = (WaveDisplay)findViewById(R.id.osc1WaveDisplay);
         this.osc1WaveDisplay.setData(this.getWavetable(osc1Wave));
-        this.osc1WaveDisplay.invalidate();
+        //this.osc1WaveDisplay.invalidate();
         this.osc2WaveDisplay = (WaveDisplay)findViewById(R.id.osc2WaveDisplay);
         this.osc2WaveDisplay.setData(this.getWavetable(osc2Wave));
-        this.osc2WaveDisplay.invalidate();
+        //this.osc2WaveDisplay.invalidate();
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

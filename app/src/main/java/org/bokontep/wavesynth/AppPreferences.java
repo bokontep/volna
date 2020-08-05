@@ -33,7 +33,9 @@ public class AppPreferences {
     }
     public void writeFloat(String name, float number)
     {
-
+        SharedPreferences.Editor editor = appPreferences.edit();
+        editor.putFloat(name,number);
+        editor.apply();
     }
     public void writeFloatArray(String name, float[] numbers)
     {
@@ -119,4 +121,7 @@ public class AppPreferences {
 
         return strRetVal;
     }
+
+
+
 }
