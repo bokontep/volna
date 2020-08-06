@@ -27,6 +27,8 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,8 +69,9 @@ public class MainActivity extends AppCompatActivity {
     private Scope scope;
     private AppCompatToggleButton redToggleButton;
     private Spinner scaleSpinner;
-    private Spinner tetSpinner;
+
     private Spinner rootNoteSpinner;
+    private SeekBar tetSeekBar;
     private SeekBar tuneSeekBar;
     private SeekBar osc1AttackSeekBar;
     private SeekBar osc1DecaySeekBar;
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc2WaveControlSeekBar;
     private SeekBar gridSizeSeekBar;
     private TextView tuneTextView;
+    private TextView tetTextView;
     private TextView osc1AttackTextView;
     private TextView osc1DecayTextView;
     private TextView osc1SustainTextView;
@@ -109,13 +113,13 @@ public class MainActivity extends AppCompatActivity {
     private AppPreferences prefs;
     private String[] rootNotes =
             {
-                    "C0","C#0","D0","D#0","E0","F0","F#0","G0","G#0","A0","A#0","B0",
-                    "C1","C#1","D1","D#1","E1","F1","F#1","G1","G#1","A1","A#1","B1",
-                    "C2","C#2","D2","D#2","E2","F2","F#2","G2","G#2","A2","A#2","B2",
-                    "C3","C#3","D3","D#3","E3","F3","F#3","G3","G#3","A3","A#3","B3",
-                    "C4","C#4","D4","D#4","E4","F4","F#4","G4","G#4","A4","A#4","B4",
-                    "C5","C#5","D5","D#5","E5","F5","F#5","G5","G#5","A5","A#5","B5",
-                    "C6","C#6","D6","D#6","E6","F6","F#6","G6","G#6","A6","A#6","B6"
+                    "C0(0)","C#0(1)","D0(2)","D#0(3)","E0(4)","F0(5)","F#0*(6)","G0(7)","G#0(8)","A0(9)","A#0(10)","B0(11)",
+                    "C1(12)","C#1(13)","D1(14)","D#1(15)","E1(16)","F1(17)","F#1(18)","G1(19)","G#1(20)","A1(21)","A#1(22)","B1(23)",
+                    "C2(24)","C#2(25)","D2(26)","D#2(27)","E2(28)","F2(29)","F#2(30)","G2(31)","G#2(32)","A2(33)","A#2(34)","B2(35)",
+                    "C3(36)","C#3(37)","D3(38)","D#3(39)","E3(40)","F3(41)","F#3(42)","G3(43)","G#3(44)","A3(45)","A#3(46)","B3(47)",
+                    "C4(48)","C#4(49)","D4(50)","D#4(51)","E4(52)","F4(53)","F#4(54)","G4(55)","G#4(56)","A4(57)","A#4(58)","B4(59)",
+                    "C5(60)","C#5(61)","D5(62)","D#5(63)","E5(64)","F5(65)","F#5(66)","G5(67)","G#5(68)","A5(69)","A#5(70)","B5(71)",
+                    "C6(72)","C#6(73)","D6(74)","D#6(75)","E6(76)","F6(77)","F#6(78)","G6(79)","G#6(80)","A6(81)","A#6(82)","B6(83)"
 
             };
     private String[] scaleNames =
@@ -212,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         scope.setRed(red);
         rootNoteSpinner = (Spinner)findViewById(R.id.rootNoteSpinner);
         final ArrayAdapter<String> rootNoteAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item,rootNotes);
+
         rootNoteSpinner.setAdapter(rootNoteAdapter);
         rootNoteSpinner.setSelection(rootNote);
 
@@ -254,28 +259,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         scaleSpinner.setSelection(currentScale);
-        final ArrayAdapter<String> tetAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,tetNames);
-        tetSpinner = (Spinner)findViewById(R.id.tetSpinner);
-        tetSpinner.setAdapter(tetAdapter);
-        tetSpinner.setOnItemSelectedListener(
-                new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                        if(position>=0 && position<tetAdapter.getCount())
-                        {
-                            tet = (position+1) * 12;
-                            setTet(tet);
-                            prefs.writeInt("tet", tet);
-                        }
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> parent) {
-
-                    }
-                }
-        );
-        tetSpinner.setSelection((tet/12)-1);
+        this.tetSeekBar = (SeekBar)findViewById(R.id.tetSeekBar);
+        this.tetSeekBar.setProgress(tet);
+        this.tetTextView = (TextView)findViewById(R.id.tetText);
+        this.tetTextView.setText("Tuning Equal Temperament (TET):"+tet);
         this.tuneSeekBar = (SeekBar)findViewById(R.id.tuneSeekBar);
         this.tuneSeekBar.setProgress((int)tune*10);
 
@@ -357,6 +344,12 @@ public class MainActivity extends AppCompatActivity {
                         setTune(tune);
                         prefs.writeInt("tune",(int)(tune*10));
 
+                        break;
+                    case R.id.tetSeekBar:
+                        tet = progress;
+                        setTet(tet);
+                        tetTextView.setText("Tuning Equal Temperament:"+tet);
+                        prefs.writeInt("tet",tet);
                         break;
                     case R.id.osc1AttackSeekBar:
                         osc1Attack = progress;
@@ -465,6 +458,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         this.tuneSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.tetSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1AttackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1DecaySeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1SustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
@@ -570,7 +564,10 @@ public class MainActivity extends AppCompatActivity {
     }
     public int transformNote(int noteIn)
     {
-
+        if(tet!=12)
+        {
+            return noteIn%128;
+        }
         int notesInScale = scales[currentScale*13];
         int relnote = noteIn-rootNote;
         int octave = relnote/notesInScale;
@@ -583,19 +580,19 @@ public class MainActivity extends AppCompatActivity {
         }
         if(index<scales.length && index>=0)
         {
-            noteOut = this.rootNote+scales[index]+octave*12;
+            noteOut = this.rootNote+scales[index]+octave*tet;
         }
         else
         {
             while(index>=scales.length)
             {
-                index = index - 12;
+                index = index - tet;
             }
             if(index<0)
             {
                 index = 0;
             }
-            noteOut = this.rootNote+scales[index]+octave*12;
+            noteOut = this.rootNote+scales[index]+octave*tet;
         }
 
         return noteOut%128;
@@ -648,7 +645,7 @@ public class MainActivity extends AppCompatActivity {
                 {
                     note = 10;
                 }
-                else if(rootNote.indexOf("G")>=0)
+                else if(rootNote.indexOf("A")>=0)
                 {
                     note = 9;
                 }
@@ -659,7 +656,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-            int octave = Integer.parseInt(rootNote.substring(rootNote.length()-1));
+            String numString = rootNote.substring(0,rootNote.indexOf("("));
+            int octave = Integer.parseInt(numString.substring(numString.length()-1));
 
             this.rootNote = 12*octave+note;
             rootNoteStr = midiNoteToString(this.rootNote);
@@ -707,8 +705,16 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+        String scopetext = "";
+        if(tet==12) {
+            scopetext = rootNoteStr + " " + scaleNames[currentScale] + " notes:";
 
-        String scopetext = rootNoteStr+" "+scaleNames[currentScale]+" notes:";
+        }
+        else
+        {
+            scopetext = "tet "+tet+ " notes:";
+        }
+
         int offset = 0;
         //Log.d("TEST","x="+x+" y="+y);
         lastnote=-1;

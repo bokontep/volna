@@ -48,6 +48,12 @@
                 android:layout_height = "wrap_content"
                 android:text = "Close Settings"
                 />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="RED Theme"
+                />
             <androidx.appcompat.widget.AppCompatToggleButton
                 android:id="@+id/redToggleButton"
 
@@ -105,15 +111,18 @@
 
                 />
             <TextView
+                android:id="@+id/tetText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:text="Select a TET" />
+                android:text="Tuning Equal Temperament (TET):" />
 
-            <Spinner
-                android:id="@+id/tetSpinner"
+            <SeekBar
+                android:id="@+id/tetSeekBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:min="2"
+                android:max="48"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
