@@ -8,8 +8,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 public class Scope extends View {
-    private final int foregroundColor = Color.GREEN;
-    private final int backgroundColor = Color.BLACK;
+
+    private int foregroundColor = Color.GREEN;
+    private int backgroundColor = Color.BLACK;
     // defines paint and canvas
     private Paint drawPaintForeground;
     private Paint drawPaintBackground;
@@ -62,6 +63,21 @@ public class Scope extends View {
         drawPaintBackground.setStyle(Paint.Style.FILL_AND_STROKE);
 
         drawPaintBackground.setTextSize(44);
+    }
+    public void setRed(boolean flag)
+    {
+        if(flag)
+        {
+            this.foregroundColor = Color.RED;
+
+        }
+        else
+        {
+            this.foregroundColor = Color.GREEN;
+        }
+        drawPaintForeground.setColor(this.foregroundColor);
+        markerPaint.setColor(this.foregroundColor);
+        this.invalidate();
     }
     public void setData(float[] newData)
     {

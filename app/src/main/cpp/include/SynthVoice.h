@@ -45,7 +45,7 @@ public:
     {
       this->sampleRate = newSampleRate;
     }
-    
+
     void MidiNoteOn(uint8_t note, uint8_t vel)
     {
         

@@ -1,6 +1,7 @@
 package org.bokontep.wavesynth;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatToggleButton;
 import androidx.core.view.MotionEventCompat;
 
 import android.app.Activity;
@@ -21,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -63,8 +65,11 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private Runnable screenUpdater;
     private Scope scope;
+    private AppCompatToggleButton redToggleButton;
     private Spinner scaleSpinner;
+    private Spinner tetSpinner;
     private Spinner rootNoteSpinner;
+    private SeekBar tuneSeekBar;
     private SeekBar osc1AttackSeekBar;
     private SeekBar osc1DecaySeekBar;
     private SeekBar osc1SustainSeekBar;
@@ -79,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc2WaveSeekBar;
     private SeekBar osc2WaveControlSeekBar;
     private SeekBar gridSizeSeekBar;
+    private TextView tuneTextView;
     private TextView osc1AttackTextView;
     private TextView osc1DecayTextView;
     private TextView osc1SustainTextView;
@@ -95,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView osc2WaveTextView;
     private TextView osc1WaveControlTextView;
     private TextView osc2WaveControlTextView;
+
     private int rootNote=36;
     private int xNoteScale = 160;
     private int currentScale = 0;
@@ -129,16 +136,29 @@ public class MainActivity extends AppCompatActivity {
                     "half whole"
             };
 
-
+    private String[] tetNames =
+            {
+                    "tet12",
+                    "tet24",
+                    "tet36",
+                    "tet48"
+            };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
         prefs = new AppPreferences(this);
         initAudio();
+        tune = (prefs.readInt("tune",4400)/10.0f);
+        setTune(tune);
+        tet = prefs.readInt("tet",12);
+        setTet(tet);
+        red = prefs.readInt("red",0)==0?false:true;
+
         osc1Volume = prefs.readInt("osc1Volume",127);
         osc2Volume = prefs.readInt("osc2Volume",127);
         osc1Attack = prefs.readInt("osc1Attack",10);
@@ -163,13 +183,37 @@ public class MainActivity extends AppCompatActivity {
         paint = new Paint();
         paint.setColor(0xffff0000);
         mHandler = new Handler();
+        redToggleButton = (AppCompatToggleButton)findViewById(R.id.redToggleButton);
+        redToggleButton.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if(isChecked)
+                        {
+                            scope.setRed(true);
+                            osc1WaveDisplay.setRed(true);
+                            osc2WaveDisplay.setRed(true);
+                            prefs.writeInt("red",1);
+                        }
+                        else
+                        {
+                            scope.setRed(false);
+                            osc1WaveDisplay.setRed(false);
+                            osc2WaveDisplay.setRed(false);
+                            prefs.writeInt("red",0);
+                        }
+                    }
+                }
+        );
         scope = findViewById(R.id.mscope);
         scope.setText(rootNoteStr+" "+scaleNames[currentScale]);
         scope.setXNoteScale(xNoteScale);
+        scope.setRed(red);
         rootNoteSpinner = (Spinner)findViewById(R.id.rootNoteSpinner);
         final ArrayAdapter<String> rootNoteAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item,rootNotes);
         rootNoteSpinner.setAdapter(rootNoteAdapter);
         rootNoteSpinner.setSelection(rootNote);
+
         rootNoteSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -209,6 +253,30 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         scaleSpinner.setSelection(currentScale);
+        final ArrayAdapter<String> tetAdapter = new ArrayAdapter<String>(this,R.layout.support_simple_spinner_dropdown_item,tetNames);
+        tetSpinner = (Spinner)findViewById(R.id.tetSpinner);
+        tetSpinner.setAdapter(tetAdapter);
+        tetSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        if(position>=0 && position<tetAdapter.getCount())
+                        {
+                            tet = (position+1) * 12;
+                            setTet(tet);
+                            prefs.writeInt("tet", tet);
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                }
+        );
+        tetSpinner.setSelection((tet/12)-1);
+        this.tuneSeekBar = (SeekBar)findViewById(R.id.tuneSeekBar);
+        this.tuneSeekBar.setProgress((int)tune*10);
 
         this.osc1AttackSeekBar = (SeekBar)findViewById(R.id.osc1AttackSeekBar);
         this.osc1AttackSeekBar.setProgress(this.osc1Attack);
@@ -238,6 +306,8 @@ public class MainActivity extends AppCompatActivity {
         this.osc1WaveControlSeekBar.setProgress(osc1WaveControl);
         this.osc2WaveControlSeekBar = (SeekBar)findViewById(R.id.osc2WaveControlSeekBar);
         this.osc2WaveControlSeekBar.setProgress(osc2WaveControl);
+        this.tuneTextView = (TextView)findViewById(R.id.tuneText);
+        this.tuneTextView.setText("A frequency (Hz):"+tune);
         this.osc1AttackTextView = (TextView)findViewById(R.id.osc1AttackText);
         this.osc1AttackTextView.setText("osc1Attack:"+osc1Attack);
         this.osc1DecayTextView = (TextView)findViewById(R.id.osc1DecayText);
@@ -267,9 +337,11 @@ public class MainActivity extends AppCompatActivity {
         this.osc2WaveControlTextView.setText("osc2WaveControl:"+osc2WaveControl);
         this.osc1WaveDisplay = (WaveDisplay)findViewById(R.id.osc1WaveDisplay);
         this.osc1WaveDisplay.setData(this.getWavetable(osc1Wave));
+        this.osc1WaveDisplay.setRed(red);
         //this.osc1WaveDisplay.invalidate();
         this.osc2WaveDisplay = (WaveDisplay)findViewById(R.id.osc2WaveDisplay);
         this.osc2WaveDisplay.setData(this.getWavetable(osc2Wave));
+        this.osc2WaveDisplay.setRed(red);
         //this.osc2WaveDisplay.invalidate();
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -278,6 +350,13 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 switch (seekBar.getId())
                 {
+                    case R.id.tuneSeekBar:
+                        tune = ((float)progress)/10.0f;
+                        tuneTextView.setText("A frequency (Hz):"+tune);
+                        setTune(tune);
+                        prefs.writeInt("tune",(int)(tune*10));
+
+                        break;
                     case R.id.osc1AttackSeekBar:
                         osc1Attack = progress;
                         osc1AttackTextView.setText("osc1Attack:"+osc1Attack);
@@ -384,6 +463,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         };
+        this.tuneSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1AttackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1DecaySeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1SustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
@@ -450,34 +530,39 @@ public class MainActivity extends AppCompatActivity {
     }
     public String midiNoteToString(int note)
     {
-        note = note%12;
-        switch(note)
-        {
-            case 0:
-                return "C";
+        note = note%tet;
+        if(tet==12) {
+            switch (note) {
+                case 0:
+                    return "C";
 
-            case 1:
-                return "C#";
-            case 2:
-                return "D";
-            case 3:
-                return "D#";
-            case 4:
-                return "E";
-            case 5:
-                return "F";
-            case 6:
-                return "F#";
-            case 7:
-                return "G";
-            case 8:
-                return "G#";
-            case 9:
-                return "A";
-            case 10:
-                return "A#";
-            case 11:
-                return "B";
+                case 1:
+                    return "C#";
+                case 2:
+                    return "D";
+                case 3:
+                    return "D#";
+                case 4:
+                    return "E";
+                case 5:
+                    return "F";
+                case 6:
+                    return "F#";
+                case 7:
+                    return "G";
+                case 8:
+                    return "G#";
+                case 9:
+                    return "A";
+                case 10:
+                    return "A#";
+                case 11:
+                    return "B";
+            }
+        }
+        else
+        {
+            return "T"+(note%tet)+"_"+(note/tet);
         }
         return "";
     }
@@ -769,6 +854,8 @@ public class MainActivity extends AppCompatActivity {
     public native float[] getWaveform();
     public native float[] getWavetable(int index);
     public native int setWavetable(int index, float[] wavetable);
+    public native int setTet(int newTet);
+    public native int setTune(float newTune);
     public long enterSettings;
     private int osc1Volume = 127;
     private int osc2Volume = 127;
@@ -786,7 +873,9 @@ public class MainActivity extends AppCompatActivity {
     private int osc1WaveControl = 0;
     private int osc2Wave = 0;
     private int osc2WaveControl = 0;
-
+    private int tet = 12;
+    private float tune = 440.0f;
     private long settingsPressTime=5000;
     private String rootNoteStr = "";
+    private boolean red = false;
 }

@@ -69,6 +69,19 @@ public class WaveDisplay extends View {
         }
         //Log.d("INFO","ViewSize=("+w+","+h+") xstep="+xstep+" ystep="+ystep+" xstart="+xstart+"ystart="+ystart);
     }
+    public void setRed(boolean flag)
+    {
+        if(flag)
+        {
+            this.foregroundColor = Color.RED;
+        }
+        else
+        {
+            this.foregroundColor = Color.GREEN;
+        }
+        this.drawPaintForeground.setColor(this.foregroundColor);
+        this.invalidate();
+    }
     float[] data;
     int w;
     int h;
@@ -76,7 +89,7 @@ public class WaveDisplay extends View {
     int ystep;
     int xstart;
     int ystart;
-    private final int foregroundColor = Color.GREEN;
+    private int foregroundColor = Color.GREEN;
     private final int backgroundColor = Color.BLACK;
     private Paint drawPaintForeground;
     private Paint drawPaintBackground;

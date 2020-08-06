@@ -29,6 +29,7 @@
             android:layout_height="wrap_content"
             android:minWidth="800px"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -46,6 +47,13 @@
                 android:layout_width="match_parent"
                 android:layout_height = "wrap_content"
                 android:text = "Close Settings"
+                />
+            <androidx.appcompat.widget.AppCompatToggleButton
+                android:id="@+id/redToggleButton"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="RED"
                 />
             <TextView
                 android:layout_width="match_parent"
@@ -69,6 +77,41 @@
 
             <Spinner
                 android:id="@+id/scaleSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/tuneText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="A note frequency(Hz)"
+                />
+            <SeekBar
+                android:id = "@+id/tuneSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="4000"
+                android:max="5000"
+
+                />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Select a TET" />
+
+            <Spinner
+                android:id="@+id/tetSpinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
             <Space

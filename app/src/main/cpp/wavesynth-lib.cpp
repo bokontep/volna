@@ -292,3 +292,17 @@ Java_org_bokontep_wavesynth_MainActivity_setWavetable(JNIEnv *env, jobject thiz,
     env->ReleaseFloatArrayElements(wavetable,w,0);
 return 0;
 }
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_MainActivity_setTet(JNIEnv *env, jobject thiz, jint new_tet) {
+    engine->handleSetTet(new_tet);
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_MainActivity_setTune(JNIEnv *env, jobject thiz, jfloat new_tune) {
+    engine->handleSetTune(new_tune);
+    return 0;
+}

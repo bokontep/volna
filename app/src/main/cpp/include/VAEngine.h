@@ -169,8 +169,9 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         
     }
     
-	void handleSetTet(float tet)
+	void handleSetTet(int tet)
 	{
+        this->tet = tet;
 		for (int i = 0; i < numvoices; i++)
 		{
 			mSynthVoice[i].SetTet(tet);
@@ -180,7 +181,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	{
 		for (int i = 0; i < numvoices; i++)
 		{
-			mSynthVoice[i].SetTune(tet);
+			mSynthVoice[i].SetTune(tune);
 		}
 	}
     void handlePitchBend(uint8_t channel, int bend)
