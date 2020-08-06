@@ -152,13 +152,6 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
         prefs = new AppPreferences(this);
-        initAudio();
-        tune = (prefs.readInt("tune",4400)/10.0f);
-        setTune(tune);
-        tet = prefs.readInt("tet",12);
-        setTet(tet);
-        red = prefs.readInt("red",0)==0?false:true;
-
         osc1Volume = prefs.readInt("osc1Volume",127);
         osc2Volume = prefs.readInt("osc2Volume",127);
         osc1Attack = prefs.readInt("osc1Attack",10);
@@ -169,6 +162,14 @@ public class MainActivity extends AppCompatActivity {
         osc2Decay = prefs.readInt("osc2Decay",0);
         osc2Sustain = prefs.readInt("osc2Sustain",127);
         osc2Release = prefs.readInt("osc2Release",0);
+        initAudio();
+        tune = (prefs.readInt("tune",4400)/10.0f);
+        setTune(tune);
+        tet = prefs.readInt("tet",12);
+        setTet(tet);
+        red = prefs.readInt("red",0)==0?false:true;
+
+
         rootNote=prefs.readInt("rootNote",35);
         xNoteScale = prefs.readInt("xNoteScale",160);
         currentScale = prefs.readInt("currentScale",0);
@@ -489,6 +490,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
         );
+        redToggleButton.setChecked(red);
 
         screenUpdater = new Runnable() {
             @Override
