@@ -22,6 +22,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -105,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView osc2WaveTextView;
     private TextView osc1WaveControlTextView;
     private TextView osc2WaveControlTextView;
-
+    private Button settingsButton;
+    private View optionsScrollView;
+    private View menuView;
     private int rootNote=36;
     private int xNoteScale = 160;
     private int currentScale = 0;
@@ -156,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
         prefs = new AppPreferences(this);
+
         osc1Volume = prefs.readInt("osc1Volume",127);
         osc2Volume = prefs.readInt("osc2Volume",127);
         osc1Attack = prefs.readInt("osc1Attack",10);
@@ -473,13 +477,28 @@ public class MainActivity extends AppCompatActivity {
         this.osc2WaveSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
-
+        this.settingsButton = (Button)findViewById(R.id.toggleSettingsButton);
+        this.optionsScrollView = findViewById(R.id.optionsScrollView);
+        this.menuView = findViewById(R.id.menu);
+        this.menuView.setVisibility(View.GONE);
+        this.settingsButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(optionsScrollView.getVisibility()==View.GONE) {
+                            menuView.setVisibility(View.GONE);
+                            optionsScrollView.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }
+        );
         findViewById(R.id.closeSettingsButton).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //applySettings();
-                        findViewById(R.id.optionsScrollView).setVisibility(View.GONE);
+                        menuView.setVisibility(View.VISIBLE);
+                        optionsScrollView.setVisibility(View.GONE);
                     }
                 }
 
@@ -691,7 +710,7 @@ public class MainActivity extends AppCompatActivity {
                 y[i]=-1;
             }
         }
-
+        /*
         if(activepointers==1)
         {
             if(event.getAction()==ACTION_DOWN) {
@@ -705,6 +724,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
+
+         */
         String scopetext = "";
         if(tet==12) {
             scopetext = rootNoteStr + " " + scaleNames[currentScale] + " notes:";

@@ -12,7 +12,7 @@
         android:id="@+id/mscope"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="0.45"
         >
 
     </org.bokontep.wavesynth.Scope>
@@ -21,7 +21,7 @@
         android:id="@+id/optionsScrollView"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="0.5"
+        android:layout_weight="0.45"
         >
 
         <LinearLayout
@@ -395,5 +395,50 @@
 
 
     </ScrollView>
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/menu"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="0.05"
 
+        >
+        <Button
+            android:id="@+id/toggleSettingsButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:text="SET"
+
+            />
+        <Button
+            android:id="@+id/recButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:text="REC"
+        />
+
+        <Button
+            android:id="@+id/playButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:text="PLAY"
+            />
+        <Button
+            android:id="@+id/clearButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:text="CLEAR"
+            />
+        <Button
+            android:id="@+id/tempoButton"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:text="TEMPO"
+            />
+    </LinearLayout>
 </LinearLayout>
