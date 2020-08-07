@@ -97,7 +97,7 @@ public class MidiPortConnector {
                                     final int sourcePortIndex,
                                     final MidiDeviceInfo destinationDeviceInfo,
                                     final int destinationPortIndex,
-                                    final com.mobileer.miditools.MidiPortConnector.OnPortsConnectedListener listener, final Handler handler) {
+                                    final MidiPortConnector.OnPortsConnectedListener listener, final Handler handler) {
         safeClose();
         mMidiManager.openDevice(destinationDeviceInfo,
                 new MidiManager.OnDeviceOpenedListener() {
@@ -151,7 +151,7 @@ public class MidiPortConnector {
     private void connectToDevicePort(final MidiDeviceInfo sourceDeviceInfo,
                                      final int sourcePortIndex,
                                      final MidiInputPort destinationInputPort,
-                                     final com.mobileer.miditools.MidiPortConnector.OnPortsConnectedListener listener, final Handler handler) {
+                                     final MidiPortConnector.OnPortsConnectedListener listener, final Handler handler) {
         mMidiManager.openDevice(sourceDeviceInfo,
                 new MidiManager.OnDeviceOpenedListener() {
                     @Override

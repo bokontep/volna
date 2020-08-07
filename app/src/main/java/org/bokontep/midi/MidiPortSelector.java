@@ -21,12 +21,12 @@ import java.util.HashSet;
  */
 public abstract class MidiPortSelector extends DeviceCallback {
     private int mType = MidiDeviceInfo.PortInfo.TYPE_INPUT;
-    protected ArrayAdapter<com.mobileer.miditools.MidiPortWrapper> mAdapter;
-    protected HashSet<com.mobileer.miditools.MidiPortWrapper> mBusyPorts = new HashSet<com.mobileer.miditools.MidiPortWrapper>();
+    protected ArrayAdapter<MidiPortWrapper> mAdapter;
+    protected HashSet<MidiPortWrapper> mBusyPorts = new HashSet<MidiPortWrapper>();
     private Spinner mSpinner;
     protected MidiManager mMidiManager;
     protected Activity mActivity;
-    private com.mobileer.miditools.MidiPortWrapper mCurrentWrapper;
+    private MidiPortWrapper mCurrentWrapper;
 
     /**
      * @param midiManager
@@ -46,7 +46,7 @@ public abstract class MidiPortSelector extends DeviceCallback {
                 android.R.layout.simple_spinner_item);
         mAdapter.setDropDownViewResource(
                 android.R.layout.simple_spinner_dropdown_item);
-        mAdapter.add(new com.mobileer.miditools.MidiPortWrapper(null, 0, 0));
+        mAdapter.add(new MidiPortWrapper(null, 0, 0));
 
         mSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
@@ -64,7 +64,7 @@ public abstract class MidiPortSelector extends DeviceCallback {
                 });
         mSpinner.setAdapter(mAdapter);
 
-        com.mobileer.miditools.MidiDeviceMonitor.getInstance(mMidiManager).registerDeviceCallback(this,
+        MidiDeviceMonitor.getInstance(mMidiManager).registerDeviceCallback(this,
                 new Handler(Looper.getMainLooper()));
 
         MidiDeviceInfo[] infos = mMidiManager.getDevices();
@@ -90,7 +90,7 @@ public abstract class MidiPortSelector extends DeviceCallback {
     public void onDeviceAdded(final MidiDeviceInfo info) {
         int portCount = getInfoPortCount(info);
         for (int i = 0; i < portCount; ++i) {
-            com.mobileer.miditools.MidiPortWrapper wrapper = new com.mobileer.miditools.MidiPortWrapper(info, mType, i);
+            MidiPortWrapper wrapper = new MidiPortWrapper(info, mType, i);
             mAdapter.add(wrapper);
             Log.i(MidiConstants.TAG, wrapper + " was added to " + this);
             mAdapter.notifyDataSetChanged();
@@ -101,8 +101,8 @@ public abstract class MidiPortSelector extends DeviceCallback {
     public void onDeviceRemoved(final MidiDeviceInfo info) {
         int portCount = getInfoPortCount(info);
         for (int i = 0; i < portCount; ++i) {
-            com.mobileer.miditools.MidiPortWrapper wrapper = new com.mobileer.miditools.MidiPortWrapper(info, mType, i);
-            com.mobileer.miditools.MidiPortWrapper currentWrapper = mCurrentWrapper;
+            MidiPortWrapper wrapper = new MidiPortWrapper(info, mType, i);
+            MidiPortWrapper currentWrapper = mCurrentWrapper;
             mAdapter.remove(wrapper);
             // If the currently selected port was removed then select no port.
             if (wrapper.equals(currentWrapper)) {
@@ -126,7 +126,7 @@ public abstract class MidiPortSelector extends DeviceCallback {
             // Look for transitions from free to busy.
             int portCount = info.getInputPortCount();
             for (int i = 0; i < portCount; ++i) {
-                com.mobileer.miditools.MidiPortWrapper wrapper = new com.mobileer.miditools.MidiPortWrapper(info, mType, i);
+                MidiPortWrapper wrapper = new MidiPortWrapper(info, mType, i);
                 if (!wrapper.equals(mCurrentWrapper)) {
                     if (status.isInputPortOpen(i)) { // busy?
                         if (!mBusyPorts.contains(wrapper)) {
@@ -152,7 +152,7 @@ public abstract class MidiPortSelector extends DeviceCallback {
      *
      * @param wrapper
      */
-    public abstract void onPortSelected(com.mobileer.miditools.MidiPortWrapper wrapper);
+    public abstract void onPortSelected(MidiPortWrapper wrapper);
 
     /**
      * Implement this method to clean up any open resources.
@@ -164,7 +164,7 @@ public abstract class MidiPortSelector extends DeviceCallback {
      * Implement this method to clean up any open resources.
      */
     public void onDestroy() {
-        com.mobileer.miditools.MidiDeviceMonitor.getInstance(mMidiManager).unregisterDeviceCallback(this);
+        MidiDeviceMonitor.getInstance(mMidiManager).unregisterDeviceCallback(this);
     }
 
     /**

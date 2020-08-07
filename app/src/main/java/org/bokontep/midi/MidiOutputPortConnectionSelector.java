@@ -12,11 +12,11 @@ import java.io.IOException;
  */
 public class MidiOutputPortConnectionSelector extends MidiPortSelector {
     public final static String TAG = "MidiOutputPortConnectionSelector";
-    private com.mobileer.miditools.MidiPortConnector mSynthConnector;
+    private MidiPortConnector mSynthConnector;
     private MidiDeviceInfo mDestinationDeviceInfo;
     private int mDestinationPortIndex;
-    private com.mobileer.miditools.MidiPortWrapper mLastWrapper;
-    private com.mobileer.miditools.MidiPortConnector.OnPortsConnectedListener mConnectedListener;
+    private MidiPortWrapper mLastWrapper;
+    private MidiPortConnector.OnPortsConnectedListener mConnectedListener;
 
     /**
      * Create a selector for connecting to the destination input port.
@@ -37,11 +37,11 @@ public class MidiOutputPortConnectionSelector extends MidiPortSelector {
     }
 
     @Override
-    public void onPortSelected(final com.mobileer.miditools.MidiPortWrapper wrapper) {
+    public void onPortSelected(MidiPortWrapper wrapper) {
         if(!wrapper.equals(mLastWrapper)) {
             onClose();
             if (wrapper.getDeviceInfo() != null) {
-                mSynthConnector = new com.mobileer.miditools.MidiPortConnector(mMidiManager);
+                mSynthConnector = new MidiPortConnector(mMidiManager);
                 mSynthConnector.connectToDevicePort(wrapper.getDeviceInfo(),
                         wrapper.getPortIndex(), mDestinationDeviceInfo,
                         mDestinationPortIndex,
@@ -69,7 +69,7 @@ public class MidiOutputPortConnectionSelector extends MidiPortSelector {
      * @param connectedListener
      */
     public void setConnectedListener(
-            com.mobileer.miditools.MidiPortConnector.OnPortsConnectedListener connectedListener) {
+            MidiPortConnector.OnPortsConnectedListener connectedListener) {
         mConnectedListener = connectedListener;
     }
 }

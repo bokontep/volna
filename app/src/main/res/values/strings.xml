@@ -10,4 +10,7 @@
     <string name="osc_2_release">Osc 2 Release</string>
     <string name="root_note">Root Note</string>
     <string name="scale">Scale</string>
+    <string-array name="senders">
+        <item>"none"</item>
+    </string-array>
 </resources>

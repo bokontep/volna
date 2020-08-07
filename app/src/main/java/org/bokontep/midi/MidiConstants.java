@@ -78,7 +78,7 @@ public class MidiConstants {
         int goodBytes = 0;
         for (int i = 0; i < count; i++) {
             byte b = msg[offset + i];
-            if (b != com.mobileer.miditools.MidiConstants.STATUS_ACTIVE_SENSING) {
+            if (b != MidiConstants.STATUS_ACTIVE_SENSING) {
                 goodBytes++;
             }
         }

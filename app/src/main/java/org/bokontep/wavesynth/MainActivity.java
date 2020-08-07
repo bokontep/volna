@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.AudioManager;
@@ -32,9 +33,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mobileer.miditools.MidiPortConnector;
 
 import org.bokontep.midi.MidiOutputPortConnectionSelector;
+import org.bokontep.midi.MidiPortConnector;
+import org.bokontep.midi.MidiTools;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -71,6 +73,30 @@ public class MainActivity extends AppCompatActivity {
 
 
             };
+    public long enterSettings;
+    private int osc1Volume = 127;
+    private int osc2Volume = 127;
+    private int osc1Attack = 10;
+    private int osc1Decay = 0;
+    private int osc1Sustain = 127;
+
+    private int osc1Release = 0;
+    private int osc2Attack = 10;
+    private int osc2Decay = 0;
+    private int osc2Sustain = 127;
+    private int osc2Release = 0;
+    private int maxSpread = 0;
+    private int osc1Wave = 0;
+    private int osc1WaveControl = 0;
+    private int osc2Wave = 0;
+    private int osc2WaveControl = 0;
+    private int tet = 12;
+    private float tune = 440.0f;
+    private long settingsPressTime=5000;
+    private String rootNoteStr = "";
+    private boolean red = false;
+    private MidiManager midiManager;
+    public MidiOutputPortConnectionSelector midiPortSelector;
     private int updateInterval = 20;
     private Handler mHandler;
     private Runnable screenUpdater;
@@ -511,7 +537,13 @@ public class MainActivity extends AppCompatActivity {
 
         );
         redToggleButton.setChecked(red);
-
+        if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            setupMidi(R.id.spinnerMidiDevice);
+        } else {
+            Toast.makeText(MainActivity.this,
+                    "MIDI not supported!", Toast.LENGTH_LONG)
+                    .show();
+        }
         screenUpdater = new Runnable() {
             @Override
             public void run() {
@@ -894,7 +926,7 @@ public class MainActivity extends AppCompatActivity {
         // Setup MIDI
         midiManager = (MidiManager) getSystemService(MIDI_SERVICE);
 
-        MidiDeviceInfo synthInfo =  com.mobileer.miditools.MidiTools.findDevice(midiManager, "Bokontep",
+        MidiDeviceInfo synthInfo =  MidiTools.findDevice(midiManager, "Bokontep",
                 "Volna");
         int portIndex = 0;
         midiPortSelector = new MidiOutputPortConnectionSelector(midiManager, this,
@@ -942,29 +974,6 @@ public class MainActivity extends AppCompatActivity {
     public native int setWavetable(int index, float[] wavetable);
     public native int setTet(int newTet);
     public native int setTune(float newTune);
-    public long enterSettings;
-    private int osc1Volume = 127;
-    private int osc2Volume = 127;
-    private int osc1Attack = 10;
-    private int osc1Decay = 0;
-    private int osc1Sustain = 127;
 
-    private int osc1Release = 0;
-    private int osc2Attack = 10;
-    private int osc2Decay = 0;
-    private int osc2Sustain = 127;
-    private int osc2Release = 0;
-    private int maxSpread = 0;
-    private int osc1Wave = 0;
-    private int osc1WaveControl = 0;
-    private int osc2Wave = 0;
-    private int osc2WaveControl = 0;
-    private int tet = 12;
-    private float tune = 440.0f;
-    private long settingsPressTime=5000;
-    private String rootNoteStr = "";
-    private boolean red = false;
-    private MidiManager midiManager;
-    public MidiOutputPortConnectionSelector midiPortSelector;
 
 }
