@@ -12,6 +12,9 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.media.AudioManager;
+import android.media.midi.MidiDevice;
+import android.media.midi.MidiDeviceInfo;
+import android.media.midi.MidiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,7 +30,11 @@ import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.mobileer.miditools.MidiPortConnector;
+
+import org.bokontep.midi.MidiOutputPortConnectionSelector;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
@@ -862,7 +869,57 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onTouchEvent(event);
     }
+    private class PortsConnectedListener
+            implements org.bokontep.midi.MidiPortConnector.OnPortsConnectedListener {
+        @Override
+        public void onPortsConnected(final MidiDevice.MidiConnection connection) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (connection == null) {
+                        Toast.makeText(MainActivity.this,
+                                "PORT BUSY", Toast.LENGTH_LONG)
+                                .show();
+                        midiPortSelector.clearSelection();
+                    } else {
+                        Toast.makeText(MainActivity.this,
+                                "PORT OPENED!", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+            });
+        }
+    }
+    private void setupMidi(int spinnerID) {
+        // Setup MIDI
+        midiManager = (MidiManager) getSystemService(MIDI_SERVICE);
 
+        MidiDeviceInfo synthInfo =  com.mobileer.miditools.MidiTools.findDevice(midiManager, "Bokontep",
+                "Volna");
+        int portIndex = 0;
+        midiPortSelector = new MidiOutputPortConnectionSelector(midiManager, this,
+                spinnerID, synthInfo, portIndex);
+        midiPortSelector.setConnectedListener(new MidiPortConnector.OnPortsConnectedListener() {
+            @Override
+            public void onPortsConnected(final MidiDevice.MidiConnection connection) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (connection == null) {
+                            Toast.makeText(MainActivity.this,
+                                    "Port busy!", Toast.LENGTH_LONG)
+                                    .show();
+                            midiPortSelector.clearSelection();
+                        } else {
+                            Toast.makeText(MainActivity.this,
+                                    "Port opened!", Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    }
+                });
+            }
+        });
+    }
 
 
     /**
@@ -907,4 +964,7 @@ public class MainActivity extends AppCompatActivity {
     private long settingsPressTime=5000;
     private String rootNoteStr = "";
     private boolean red = false;
+    private MidiManager midiManager;
+    public MidiOutputPortConnectionSelector midiPortSelector;
+
 }
