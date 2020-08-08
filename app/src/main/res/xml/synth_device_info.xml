@@ -15,7 +15,7 @@
 -->
 
 <devices>
-    <device manufacturer="bokontep" product="volna">
+    <device manufacturer="Bokontep" product="Volna">
         <input-port name="input" />
     </device>
 </devices>

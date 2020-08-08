@@ -16,6 +16,7 @@ import android.media.AudioManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
+import android.media.midi.MidiReceiver;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,6 +40,7 @@ import org.bokontep.midi.MidiPortConnector;
 import org.bokontep.midi.MidiTools;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +50,7 @@ import static android.view.MotionEvent.ACTION_UP;
 import static android.view.MotionEvent.AXIS_Y;
 
 public class MainActivity extends AppCompatActivity {
-
+    static final String TAG = "Volna";
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("wavesynth-lib");
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     10, 0, 1, 2, 4, 5, 7, 8, 9,10,11, 0, 0, // major2
                      8, 0, 1, 4, 5, 7, 8,10,11, 0, 0, 0, 0, // minor2
                      5, 0, 3, 5, 7,10, 0, 0, 0, 0, 0, 0, 0, // pentatonic
-                     6, 0, 3, 4, 5, 7,10, 0, 0, 0, 0, 0, 0, // blues
+                     6, 0, 3, 5, 6, 7,10, 0, 0, 0, 0, 0, 0, // blues
                      5, 0, 2, 5, 7, 9, 0, 0, 0, 0, 0, 0, 0, // chinese pentatonic
                      6, 0, 2, 4, 6, 8,10, 0, 0, 0, 0, 0, 0, // whole tone
                      8, 0, 2, 3, 5, 6, 8, 9,11, 0, 0, 0, 0, // whole half
@@ -73,13 +75,22 @@ public class MainActivity extends AppCompatActivity {
 
 
             };
+    private long lastTouchEventTime = 0;
+
+
+
+    private String midiLog="";
+    private VolnaMidiReceiver midiReceiver;
+    private Paint paint;
+    private int lastnote=-1;
+    private int vel =-1;
     public long enterSettings;
     private int osc1Volume = 127;
     private int osc2Volume = 127;
     private int osc1Attack = 10;
     private int osc1Decay = 0;
     private int osc1Sustain = 127;
-
+    private int touchPoints = 0;
     private int osc1Release = 0;
     private int osc2Attack = 10;
     private int osc2Decay = 0;
@@ -176,13 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     "half whole"
             };
 
-    private String[] tetNames =
-            {
-                    "tet12",
-                    "tet24",
-                    "tet36",
-                    "tet48"
-            };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -247,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
         scope = findViewById(R.id.mscope);
         scope.setText(rootNoteStr+" "+scaleNames[currentScale]);
         scope.setXNoteScale(xNoteScale);
@@ -544,16 +550,25 @@ public class MainActivity extends AppCompatActivity {
                     "MIDI not supported!", Toast.LENGTH_LONG)
                     .show();
         }
+
+
+
         screenUpdater = new Runnable() {
             @Override
             public void run() {
+                long now = new java.util.Date().getTime();
+                if((touchPoints==0) && (now-lastTouchEventTime)>10000)
+                {
+                    for(int i=0;i<128;i++)
+                    {
+                        sendMidiNoteOff(1,i,0);
+                    }
+                }
                 scope.setData(getWaveform());
                 scope.invalidate();
                 mHandler.postDelayed(screenUpdater,updateInterval);
             }
         };
-
-
 
         mHandler.postDelayed(screenUpdater,updateInterval);
 
@@ -726,6 +741,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        lastTouchEventTime = new java.util.Date().getTime();
         int action = event.getActionMasked();
         int index = event.getActionIndex();
         //int id = event.getPointerId(index);
@@ -734,6 +750,7 @@ public class MainActivity extends AppCompatActivity {
         float height = event.getDevice().getMotionRange(AXIS_Y).getRange();
 
         int activepointers = event.getPointerCount()%10; // do not track more than 10
+        touchPoints = activepointers;
         float[] x = new float[10];
         float[] y = new float[10];
         for(int i=0;i<10;i++)
@@ -901,6 +918,18 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onTouchEvent(event);
     }
+
+    public void logMidi(byte[] data)
+    {
+        if(data!=null)
+        {
+            if(data.length>0) {
+                this.midiLog = "RX:" + data[0];
+                scope.setMidilog(this.midiLog);
+            }
+        }
+    }
+
     private class PortsConnectedListener
             implements org.bokontep.midi.MidiPortConnector.OnPortsConnectedListener {
         @Override
@@ -928,7 +957,12 @@ public class MainActivity extends AppCompatActivity {
 
         MidiDeviceInfo synthInfo =  MidiTools.findDevice(midiManager, "Bokontep",
                 "Volna");
+        if(synthInfo!=null)
+        {
+            scope.setMidilog("MIDI device found!");
+        }
         int portIndex = 0;
+        scope.setMidilog("");
         midiPortSelector = new MidiOutputPortConnectionSelector(midiManager, this,
                 spinnerID, synthInfo, portIndex);
         midiPortSelector.setConnectedListener(new MidiPortConnector.OnPortsConnectedListener() {
@@ -951,6 +985,9 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+        midiReceiver = new VolnaMidiReceiver(this);
+
+        VolnaMidiDeviceService.setMidiReceiver(midiReceiver);
     }
 
 
@@ -958,9 +995,7 @@ public class MainActivity extends AppCompatActivity {
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    private Paint paint;
-    private int lastnote=-1;
-    private int vel =-1;
+
     public native String stringFromJNI();
     public native int initVAEngine(int sampleRate);
     public native int setVAEngineDefaultStreamValues(int sampleRate, int framesPerBurst);

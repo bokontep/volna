@@ -11,13 +11,13 @@ public class MidiConstants {
     public static final byte STATUS_CHANNEL_MASK = (byte) 0x0F;
 
     // Channel voice messages.
-    public static final byte STATUS_NOTE_OFF = (byte) 0x80;
-    public static final byte STATUS_NOTE_ON = (byte) 0x90;
-    public static final byte STATUS_POLYPHONIC_AFTERTOUCH = (byte) 0xA0;
-    public static final byte STATUS_CONTROL_CHANGE = (byte) 0xB0;
-    public static final byte STATUS_PROGRAM_CHANGE = (byte) 0xC0;
-    public static final byte STATUS_CHANNEL_PRESSURE = (byte) 0xD0;
-    public static final byte STATUS_PITCH_BEND = (byte) 0xE0;
+    public static final int STATUS_NOTE_OFF =  0x80;
+    public static final int STATUS_NOTE_ON =  0x90;
+    public static final int STATUS_POLYPHONIC_AFTERTOUCH =  0xA0;
+    public static final int STATUS_CONTROL_CHANGE =  0xB0;
+    public static final int STATUS_PROGRAM_CHANGE =  0xC0;
+    public static final int STATUS_CHANNEL_PRESSURE =  0xD0;
+    public static final int STATUS_PITCH_BEND =  0xE0;
 
     // System Common Messages.
     public static final byte STATUS_SYSTEM_EXCLUSIVE = (byte) 0xF0;

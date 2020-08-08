@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.bokontep.wavesynth">
+    <uses-feature android:name="android.software.midi" android:required="true"/>
 
     <application
         android:allowBackup="true"
@@ -20,6 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name="org.bokontep.wavesynth.VolnaMidiDeviceService"
+            android:permission="android.permission.BIND_MIDI_DEVICE_SERVICE">
+            <intent-filter>
+                <action android:name="android.media.midi.MidiDeviceService" />
+            </intent-filter>
+            <meta-data android:name="android.media.midi.MidiDeviceService"
+                android:resource="@xml/synth_device_info" />
+        </service>
     </application>
 
 </manifest>

@@ -23,6 +23,7 @@ public class Scope extends View {
     private float ystart = 0.0f;
     private float w = 0f;
     private float h = 0f;
+    private String midiLog = "";
     private float settingsPercentage;
     String [] markers = new String[10];
     float[] x_vals = new float[10];
@@ -148,8 +149,15 @@ public class Scope extends View {
         if(text!=null) {
             canvas.drawText(text, 30, 65, drawPaintForeground);
         }
+        if(midiLog!=null)
+        {
+            canvas.drawText(this.midiLog,30, 130,drawPaintBackground);
+        }
     }
-
+    public void setMidilog(String text)
+    {
+        this.midiLog = text;
+    }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
