@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class Scope extends View {
@@ -36,6 +37,11 @@ public class Scope extends View {
         super(context,attrs);
         setFocusable(true);
         setFocusableInTouchMode(true);
+        data = new float[256];
+        for(int i=0;i<data.length;i++)
+        {
+            data[i] = 0.0f;
+        }
         setupPaint();
     }
     public void setXNoteScale(int xNoteScale)
@@ -179,4 +185,8 @@ public class Scope extends View {
         //Log.d("INFO","ViewSize=("+w+","+h+") xstep="+xstep+" ystep="+ystep+" xstart="+xstart+"ystart="+ystart);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return super.onTouchEvent(event);
+    }
 }

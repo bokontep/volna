@@ -9,11 +9,11 @@ import java.io.IOException;
 
 public class VolnaMidiReceiver extends MidiReceiver {
     public static final String TAG="VolnaMidiReceiver";
-    private MainActivity parent;
+    private SynthEngine engine;
 
-    public VolnaMidiReceiver(MainActivity p)
+    public VolnaMidiReceiver(SynthEngine engine)
     {
-        this.parent = p;
+        this.engine = engine;
     }
 
     @Override
@@ -32,15 +32,15 @@ public class VolnaMidiReceiver extends MidiReceiver {
         {
             Log.d(TAG,"command:"+command+" channel:"+channel+ " data1:"+(data[offset+1]&0b1111111)+" data2:"+(data[offset+2]&0b1111111));
         }
-        parent.logMidi(data);
+        //parent.logMidi(data);
         switch (command) {
             case MidiConstants.STATUS_NOTE_OFF:
                 Log.d(TAG,"noteOff:"+(data[offset+1]&0b1111111));
-                parent.sendMidiNoteOff(channel, data[offset+1]&0b1111111, data[offset+2]&0b1111111);
+                engine.sendMidiNoteOff(channel, data[offset+1]&0b1111111, data[offset+2]&0b1111111);
                 break;
             case MidiConstants.STATUS_NOTE_ON:
                 Log.d(TAG,"noteOn :"+(data[offset+1]&0b1111111));
-                parent.sendMidiNoteOn(channel, data[offset+1]&0b1111111, data[offset+2]&0b1111111);
+                engine.sendMidiNoteOn(channel, data[offset+1]&0b1111111, data[offset+2]&0b1111111);
                 break;
             case MidiConstants.STATUS_PITCH_BEND:
                 //int bend = (data[2] << 7) + data[1];

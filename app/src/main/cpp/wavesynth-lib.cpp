@@ -160,17 +160,10 @@ void initWaveforms(bool bandlimit,float freq,float q)
 }
 
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_org_bokontep_wavesynth_MainActivity_stringFromJNI(
-        JNIEnv* env,
-        jobject /* this */) {
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
-}
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_initVAEngine(JNIEnv *env, jobject thiz, jint sample_rate) {
+Java_org_bokontep_wavesynth_SynthEngine_initVAEngine(JNIEnv *env, jobject thiz, jint sample_rate) {
     // TODO: implement initVAEngine()
     initWaveforms(true,0.5,0.6);
     engine = new VAEngine<POLYPHONY,WTCOUNT,WTLEN>(Waveforms);
@@ -180,7 +173,7 @@ Java_org_bokontep_wavesynth_MainActivity_initVAEngine(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_setVAEngineDefaultStreamValues(JNIEnv *env,
+Java_org_bokontep_wavesynth_SynthEngine_setVAEngineDefaultStreamValues(JNIEnv *env,
                                             jobject thiz,
                                             jint sample_rate,
                                             jint frames_per_burst) {
@@ -192,7 +185,7 @@ Java_org_bokontep_wavesynth_MainActivity_setVAEngineDefaultStreamValues(JNIEnv *
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_sendMidiCC(JNIEnv *env,
+Java_org_bokontep_wavesynth_SynthEngine_sendMidiCC(JNIEnv *env,
                         jobject thiz,
                         jint channel,
                         jint cc,
@@ -207,7 +200,7 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiCC(JNIEnv *env,
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOn(
+Java_org_bokontep_wavesynth_SynthEngine_sendMidiNoteOn(
                                                         JNIEnv * env,
                                                         jobject thiz,
                                                         jint channel,
@@ -221,7 +214,7 @@ return 0;
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOff(
+Java_org_bokontep_wavesynth_SynthEngine_sendMidiNoteOff(
         JNIEnv * env,
         jobject thiz,
         jint channel,
@@ -234,7 +227,7 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteOff(
 }
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteSpread(JNIEnv *env, jobject thiz, jint channel,
+Java_org_bokontep_wavesynth_SynthEngine_sendMidiNoteSpread(JNIEnv *env, jobject thiz, jint channel,
                                                             jint note, jint spread) {
     engine->handleNoteSpread(channel,note, spread);
 
@@ -243,7 +236,7 @@ Java_org_bokontep_wavesynth_MainActivity_sendMidiNoteSpread(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT jfloatArray JNICALL
-Java_org_bokontep_wavesynth_MainActivity_getWaveform(JNIEnv* env, jobject thiz)
+Java_org_bokontep_wavesynth_SynthEngine_getWaveform(JNIEnv* env, jobject thiz)
 {
     jfloatArray result;
     result = (*env).NewFloatArray(256);
@@ -261,16 +254,16 @@ Java_org_bokontep_wavesynth_MainActivity_getWaveform(JNIEnv* env, jobject thiz)
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_selectWaveform(JNIEnv *env, jobject thiz, jint channel,
+Java_org_bokontep_wavesynth_SynthEngine_selectWaveform(JNIEnv *env, jobject thiz, jint channel,
                                                         jint osc, jint note, jint wave) {
-    // TODO: implement selectWaveform()
+
     engine->handleSelectWaveform(channel, osc, note, wave);
     return 0;
 }
 
 extern "C"
 JNIEXPORT jfloatArray JNICALL
-Java_org_bokontep_wavesynth_MainActivity_getWavetable(JNIEnv *env, jobject thiz, jint index) {
+Java_org_bokontep_wavesynth_SynthEngine_getWavetable(JNIEnv *env, jobject thiz, jint index) {
     jfloatArray result;
     result = (*env).NewFloatArray(256);
 
@@ -282,7 +275,7 @@ Java_org_bokontep_wavesynth_MainActivity_getWavetable(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_setWavetable(JNIEnv *env, jobject thiz, jint index,
+Java_org_bokontep_wavesynth_SynthEngine_setWavetable(JNIEnv *env, jobject thiz, jint index,
                                                       jfloatArray wavetable) {
     jfloat * w = env->GetFloatArrayElements(wavetable,0);
     for(int i=0;i<WTLEN;i++)
@@ -295,14 +288,14 @@ return 0;
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_setTet(JNIEnv *env, jobject thiz, jint new_tet) {
+Java_org_bokontep_wavesynth_SynthEngine_setTet(JNIEnv *env, jobject thiz, jint new_tet) {
     engine->handleSetTet(new_tet);
     return 0;
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_org_bokontep_wavesynth_MainActivity_setTune(JNIEnv *env, jobject thiz, jfloat new_tune) {
+Java_org_bokontep_wavesynth_SynthEngine_setTune(JNIEnv *env, jobject thiz, jfloat new_tune) {
     engine->handleSetTune(new_tune);
     return 0;
 }
