@@ -553,14 +553,15 @@ public class MainActivity extends AppCompatActivity {
         screenUpdater = new Runnable() {
             @Override
             public void run() {
+                /*
                 long now = new java.util.Date().getTime();
-                if ((touchPoints == 0) && (now - lastTouchEventTime) > 10000) {
+                if ((touchPoints == 0) && (now - lastTouchEventTime) > 60000) {
                     for (int i = 0; i < 128; i++) {
                         engine.sendMidiNoteOff(1, i, 0);
 
                     }
                     lastTouchEventTime = now;
-                }
+                }*/
                 scope.setData(engine.getWaveform());
                 scope.invalidate();
                 mHandler.postDelayed(screenUpdater, updateInterval);
