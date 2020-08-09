@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.AudioManager;
 import android.media.midi.MidiDevice;
@@ -81,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
     private int vel = -1;
     public long enterSettings;
     private int touchPoints = 0;
-
+    private boolean play = false;
+    private boolean record = false;
     private int maxSpread = 0;
     private int osc1Wave = 0;
     private int osc1WaveControl = 0;
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private int osc2WaveControl = 0;
     private int tet = 12;
     private float tune = 440.0f;
+    private float octaveFactor = 2.0f;
     private long settingsPressTime = 5000;
     private String rootNoteStr = "";
     private boolean red = false;
@@ -104,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner rootNoteSpinner;
     private SeekBar tetSeekBar;
     private SeekBar tuneSeekBar;
+    private SeekBar octaveFactorSeekBar;
     private SeekBar osc1AttackSeekBar;
     private SeekBar osc1DecaySeekBar;
     private SeekBar osc1SustainSeekBar;
@@ -120,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar gridSizeSeekBar;
     private TextView tuneTextView;
     private TextView tetTextView;
+    private TextView octaveFactorTextView;
     private TextView osc1AttackTextView;
     private TextView osc1DecayTextView;
     private TextView osc1SustainTextView;
@@ -203,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
 
         tune = (prefs.readInt("tune", 4400) / 10.0f);
         tet = prefs.readInt("tet", 12);
-
+        octaveFactor = (prefs.readInt("octaveFactor",2000)/1000.0f);
         red = prefs.readInt("red", 0) == 0 ? false : true;
 
 
@@ -219,6 +224,7 @@ public class MainActivity extends AppCompatActivity {
 
         engine.setTune(tune);
         engine.setTet(tet);
+        engine.setOctaveFactor(octaveFactor);
         rootNoteStr = this.midiNoteToString(rootNote);
 
         setContentView(R.layout.activity_main);
@@ -297,6 +303,11 @@ public class MainActivity extends AppCompatActivity {
         this.tetTextView.setText("Tuning Equal Temperament (TET):" + tet);
         this.tuneSeekBar = (SeekBar) findViewById(R.id.tuneSeekBar);
         this.tuneSeekBar.setProgress((int) tune * 10);
+        this.octaveFactorTextView = (TextView)findViewById(R.id.octaveFactorText);
+        this.octaveFactorTextView.setText("Octave factor (default is 2):"+octaveFactor);
+        this.octaveFactorSeekBar = (SeekBar)findViewById(R.id.octaveFactorSeekBar);
+        this.octaveFactorSeekBar.setProgress((int)octaveFactor*1000);
+
 
         this.osc1AttackSeekBar = (SeekBar) findViewById(R.id.osc1AttackSeekBar);
         this.osc1AttackSeekBar.setProgress(engine.getOsc1Attack());
@@ -381,6 +392,12 @@ public class MainActivity extends AppCompatActivity {
                         engine.setTet(tet);
                         tetTextView.setText("Tuning Equal Temperament:" + tet);
                         prefs.writeInt("tet", tet);
+                        break;
+                    case R.id.octaveFactorSeekBar:
+                        octaveFactor = ((float)progress) / 1000.0f;
+                        octaveFactorTextView.setText("Octave factor (default is 2):"+octaveFactor);
+                        engine.setOctaveFactor(octaveFactor);
+                        prefs.writeInt("octaveFactor",(int)(octaveFactor*1000));
                         break;
                     case R.id.osc1AttackSeekBar:
                         engine.setOsc1Attack(progress);
@@ -490,6 +507,7 @@ public class MainActivity extends AppCompatActivity {
         };
         this.tuneSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.tetSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.octaveFactorSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1AttackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1DecaySeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1SustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
@@ -507,11 +525,48 @@ public class MainActivity extends AppCompatActivity {
         this.osc2WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.settingsButton = (Button) findViewById(R.id.toggleSettingsButton);
         this.recButton = (Button)findViewById(R.id.recButton);
+        this.recButton.setBackgroundColor(Color.GRAY);
         this.playButton = (Button)findViewById(R.id.playButton);
         this.clearButton = (Button)findViewById(R.id.clearButton);
         this.tempoButton = (Button)findViewById(R.id.tempoButton);
-        this.recButton.setVisibility(View.INVISIBLE);
-        this.playButton.setVisibility(View.INVISIBLE);
+        this.recButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!record)
+                {
+                    record = true;
+                    engine.setRecord(record);
+                    recButton.setBackgroundColor(Color.RED);
+                }
+                else
+                {
+                    record = false;
+                    engine.setRecord(record);
+                    recButton.setBackgroundColor(Color.GRAY);
+                }
+                recButton.invalidate();
+            }
+        });
+        this.playButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!play)
+                {
+                    play = true;
+                    engine.setPlay(play);
+                    playButton.setBackgroundColor(Color.GREEN);
+
+                }
+                else
+                {
+                    play = false;
+                    engine.setPlay(play);
+                    playButton.setBackgroundColor(Color.GRAY);
+                }
+            }
+        });
+        //this.recButton.setVisibility(View.INVISIBLE);
+        //this.playButton.setVisibility(View.INVISIBLE);
         this.clearButton.setVisibility(View.INVISIBLE);
         this.tempoButton.setVisibility(View.INVISIBLE);
         this.optionsScrollView = findViewById(R.id.optionsScrollView);

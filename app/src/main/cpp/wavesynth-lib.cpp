@@ -299,3 +299,23 @@ Java_org_bokontep_wavesynth_SynthEngine_setTune(JNIEnv *env, jobject thiz, jfloa
     engine->handleSetTune(new_tune);
     return 0;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setOctaveFactor(JNIEnv *env, jobject thiz, jfloat factor) {
+    engine->handleSetOctaveFactor(factor);
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setPlay(JNIEnv *env, jobject thiz, jboolean flag) {
+    engine->SetPlay(flag);
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setRecord(JNIEnv *env, jobject thiz, jboolean flag) {
+    engine->SetRecord(flag);
+    return 0;
+}

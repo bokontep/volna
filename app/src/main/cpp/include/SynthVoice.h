@@ -49,7 +49,7 @@ public:
     void MidiNoteOn(uint8_t note, uint8_t vel)
     {
         
-        float f = pow(2.0,(note*1.0-69.0)/tet)*tune;
+        float f = pow(octave_factor,(note*1.0-69.0)/tet)*tune;
         velocity = vel/127.0;
         freq1 = f;
         freq2 = f;
@@ -127,11 +127,15 @@ public:
         osc[1].SetFrequency(bendfreq2,sampleRate);
 
     }
+    void SetOctaveFactor(float factor)
+    {
+        this->octave_factor = factor;
+    }
     void MidiBend(int bend)
     {
       //AudioNoInterrupts();
       float factor = ((bend - 8192.0)/8192.0);
-      float mul = pow(2.0,(factor*tet)/tet);
+      float mul = pow(octave_factor,(factor*tet)/tet);
       float bendfreq1 = freq1*mul;
       float bendfreq2 = freq2*mul;
       
@@ -456,6 +460,7 @@ protected:
     float fmod3;
     float ffreq;
     float fq;
+    float octave_factor=2.0;
     LowPass lowpass;
     uint8_t wt1_idx;
     uint8_t wt2_idx;

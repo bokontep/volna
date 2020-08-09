@@ -14,27 +14,34 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     }
     ~VAEngine()
     {
-      
+        if(recBuffer!=NULL)
+        delete recBuffer;
+        if(playBuffer!=NULL)
+        delete playBuffer;
     }
     void init(float sampleRate)
     {
-      for(int i=0;i<numvoices;i++)
-      {
-        for(int j=0;j<WAVEFORM_COUNT;j++)
+        recBufferLen = sampleRate*60;
+        recBuffer = new float[recBufferLen]; // allocate buffers for one minute recording/playback
+        playBufferLen = sampleRate*60;
+        playBuffer = new float[playBufferLen];
+        for(int i=0;i<numvoices;i++)
         {
-          
-          mSynthVoice[i].SetSampleRate(sampleRate);
-          mSynthVoice[i].AddOsc1SharedWaveTable(WTLEN,&waveforms[j*WTLEN]);
-          mSynthVoice[i].AddOsc2SharedWaveTable(WTLEN,&waveforms[j*WTLEN]);
+            for(int j=0;j<WAVEFORM_COUNT;j++)
+            {
+
+              mSynthVoice[i].SetSampleRate(sampleRate);
+              mSynthVoice[i].AddOsc1SharedWaveTable(WTLEN,&waveforms[j*WTLEN]);
+              mSynthVoice[i].AddOsc2SharedWaveTable(WTLEN,&waveforms[j*WTLEN]);
+            }
+            voices_notes[i]=-1;
         }
-        voices_notes[i]=-1;
-      }
         oboe::AudioStreamBuilder builder;
         // The builder set methods can be chained for convenience.
         builder.setSharingMode(oboe::SharingMode::Exclusive)
                 ->setPerformanceMode(oboe::PerformanceMode::LowLatency)
                 ->setChannelCount(kChannelCount)
-                ->setSampleRate(kSampleRate)
+                ->setSampleRate(sampleRate)
                 ->setFormat(oboe::AudioFormat::Float)
                 ->setCallback(this)
                 ->openManagedStream(outStream);
@@ -65,14 +72,36 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         float *floatData = (float *) audioData;
         for (int i = 0; i < numFrames; ++i) {
             float sampleValue = Process();
+            if(play)
+            {
+                if(playIndex<playIndexEnd) {
+                    sampleValue = sampleValue + playBuffer[playIndex];
+                    playIndex = (playIndex+1) % playBufferLen;
+                    if(playIndex>=playIndexEnd && playIndexStart<playIndexEnd)
+                    {
+                        playIndex = playIndexStart;
+                    }
+                }
+            }
             wavedata[index]=sampleValue;
             index = (index+1)%256;
             for (int j = 0; j < kChannelCount; j++) {
                 floatData[i * kChannelCount + j] = sampleValue;
-
             }
+            if (record)
+            {
+                if(recIndex<recBufferLen) {
+                    recBuffer[recIndex] = sampleValue;
+                    recIndex = (recIndex+1) % recBufferLen;
+                    recIndexEnd = recIndexEnd+1;
 
-
+                } else
+                {
+                    recIndex = 0;
+                    recIndexEnd = 0;
+                    recIndexStart = 0;
+                }
+            }
         }
         return oboe::DataCallbackResult::Continue;
     }
@@ -197,7 +226,14 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       
       
     }
-    
+
+    void handleSetOctaveFactor(float factor)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            mSynthVoice[i].SetOctaveFactor(factor);
+        }
+    }
 	void setADSR(uint8_t a, uint8_t d, uint8_t s, uint8_t r)
 	{
 		for (int i = 0; i < numvoices; i++)
@@ -248,6 +284,38 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     {
         return wavedata;
     }
+    void SetPlay(bool flag)
+    {
+
+        if(flag)
+        {
+            memcpy(playBuffer,recBuffer,sizeof(float)*recBufferLen);
+            playIndexStart = recIndexStart;
+            playIndexEnd = recIndexEnd;
+            playIndex = recIndexStart;
+        }
+        this->play = flag;
+    }
+    void SetRecord(bool flag)
+    {
+
+        if(flag)
+        {
+            this->recIndexStart = 0;
+            this->recIndexEnd = 0;
+            this->recIndex = 0;
+        } else
+        {
+            if(play)
+            {
+                memcpy(playBuffer,recBuffer,sizeof(float)*recBufferLen);
+                playIndexStart = recIndexStart;
+                playIndexEnd = recIndexEnd;
+                playIndex = recIndexStart;
+            }
+        }
+        this->record = flag;
+    }
     private:
       SynthVoice mSynthVoice[numvoices];
       int voices_notes[numvoices];
@@ -262,9 +330,22 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	  int tet = 12;
 	  oboe::ManagedStream outStream;
 	  //Stream params
-	  static int constexpr kChannelCount = 2;
-	  static int constexpr kSampleRate = 48000;
+	  int kChannelCount = 2;
+	  int sampleRate = 48000;
 	  float wavedata[256];
 	  int index = 0;
+	  float* recBuffer;
+	  int recIndexStart = 0;
+	  int recIndexEnd = 0;
+	  int recIndex = 0;
+	  int recBufferLen = 0;
+	  float* playBuffer;
+	  int playIndex = 0;
+	  int playIndexStart = 0;
+	  int playIndexEnd = 0;
+	  int playBufferLen = 0;
+
+	  bool play = false;
+	  bool record = false;
 };
 #endif

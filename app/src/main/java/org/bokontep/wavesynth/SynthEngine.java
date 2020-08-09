@@ -69,6 +69,9 @@ public class SynthEngine {
     public native int setWavetable(int index, float[] wavetable);
     public native int setTet(int newTet);
     public native int setTune(float newTune);
+    public native int setOctaveFactor(float factor);
+    public native int setRecord(boolean flag);
+    public native int setPlay(boolean flag);
 
     public int getSampleRate() {
         return sampleRate;

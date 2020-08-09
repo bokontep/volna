@@ -90,6 +90,7 @@
                 android:layout_height="20dp"
 
                 />
+
             <TextView
                 android:id="@+id/tuneText"
                 android:layout_width="match_parent"
@@ -103,6 +104,26 @@
                 android:layout_height="wrap_content"
                 android:min="4000"
                 android:max="5000"
+
+                />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/octaveFactorText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="octave factor (default 2.0)"
+                />
+            <SeekBar
+                android:id = "@+id/octaveFactorSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="1500"
+                android:max="2500"
 
                 />
             <Space
