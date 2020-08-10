@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="30sp"
-                android:text="волна v.0.4"/>
+                android:text="волна v.0.5"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
