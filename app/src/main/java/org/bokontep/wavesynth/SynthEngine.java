@@ -62,6 +62,7 @@ public class SynthEngine {
     public native int sendMidiCC(int channel, int cc, int data);
     public native int sendMidiNoteOn(int channel, int note, int velocity );
     public native int sendMidiNoteOff(int channel, int note, int velocity );
+    public native int sendMidiBend(int channel, int low, int high);
     public native int sendMidiNoteSpread(int channel, int note, int spread);
     public native int selectWaveform(int channel, int osc, int note,  int wave);
     public native float[] getWaveform();

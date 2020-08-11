@@ -34,6 +34,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 
 import org.bokontep.midi.MidiOutputPortConnectionSelector;
@@ -101,9 +102,10 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private Runnable screenUpdater;
     private Scope scope;
-    private AppCompatToggleButton redToggleButton;
+    private ToggleButton redToggleButton;
+    private ToggleButton legatoToggleButton;
     private Spinner scaleSpinner;
-
+    private boolean legato = true;
     private Spinner rootNoteSpinner;
     private SeekBar tetSeekBar;
     private SeekBar tuneSeekBar;
@@ -210,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
         tet = prefs.readInt("tet", 12);
         octaveFactor = (prefs.readInt("octaveFactor",2000)/1000.0f);
         red = prefs.readInt("red", 0) == 0 ? false : true;
-
+        legato = prefs.readInt("legato", 0)==0?false:true;
 
         rootNote = prefs.readInt("rootNote", 35);
         xNoteScale = prefs.readInt("xNoteScale", 160);
@@ -231,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
         paint = new Paint();
         paint.setColor(0xffff0000);
         mHandler = new Handler();
-        redToggleButton = (AppCompatToggleButton) findViewById(R.id.redToggleButton);
+        redToggleButton = (ToggleButton) findViewById(R.id.redToggleButton);
         redToggleButton.setOnCheckedChangeListener(
                 new CompoundButton.OnCheckedChangeListener() {
                     @Override
@@ -247,6 +249,16 @@ public class MainActivity extends AppCompatActivity {
                             osc2WaveDisplay.setRed(false);
                             prefs.writeInt("red", 0);
                         }
+                    }
+                }
+        );
+        legatoToggleButton = (ToggleButton)findViewById(R.id.legatoToggleButton);
+        legatoToggleButton.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        legato=isChecked;
+                        prefs.writeInt("legato", legato?1:0);
                     }
                 }
         );
@@ -595,7 +607,7 @@ public class MainActivity extends AppCompatActivity {
 
         );
         redToggleButton.setChecked(red);
-
+        legatoToggleButton.setChecked(legato);
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI)) {
             setupMidi(R.id.spinnerMidiDevice);
         } else {
@@ -827,7 +839,9 @@ public class MainActivity extends AppCompatActivity {
             if (action == MotionEvent.ACTION_MOVE) {
 
                 if (midinote != lastnote) {
-                    engine.sendMidiNoteOff(0, lastnote, 0);
+                    if(!legato) {
+                        engine.sendMidiNoteOff(0, lastnote, 0);
+                    }
                     notemap.remove(id);
                     int offset1 = 64 - oscdist;
                     int offset2 = 64 + oscdist;
@@ -839,6 +853,10 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     engine.sendMidiNoteOn(0, midinote, vel);
+                    if(legato)
+                    {
+                        engine.sendMidiNoteOff(0, lastnote, 0);
+                    }
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
                     lastnote = midinote;
@@ -851,6 +869,10 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
+        }
+        if(legato)
+        {
+            scopetext = scopetext+" L";
         }
         scope.setText(scopetext);
         return super.onTouchEvent(event);

@@ -43,11 +43,15 @@ public class VolnaMidiReceiver extends MidiReceiver {
                 engine.sendMidiNoteOn(channel, data[offset+1]&0b1111111, data[offset+2]&0b1111111);
                 break;
             case MidiConstants.STATUS_PITCH_BEND:
-                //int bend = (data[2] << 7) + data[1];
+
+                engine.sendMidiBend(channel,data[offset+1],data[offset+2]);
                 //parent.sendMidiCC(channel, bend);
                 break;
             case MidiConstants.STATUS_PROGRAM_CHANGE:
-
+                //NOT implemented!
+                break;
+            case MidiConstants.STATUS_CONTROL_CHANGE:
+                engine.sendMidiCC(channel, data[offset+1],data[offset+2]);
                 break;
             default:
                 //logMidiMessage(data, offset, count);

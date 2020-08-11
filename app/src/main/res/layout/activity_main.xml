@@ -54,7 +54,7 @@
                 android:textSize="20sp"
                 android:text="RED Theme"
                 />
-            <androidx.appcompat.widget.AppCompatToggleButton
+            <ToggleButton
                 android:id="@+id/redToggleButton"
 
                 android:layout_width="match_parent"
@@ -148,6 +148,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
 
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Legato"
+                />
+            <ToggleButton
+                android:id="@+id/legatoToggleButton"
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Legato"
                 />
             <TextView
                 android:id="@+id/osc1AttackText"

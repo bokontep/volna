@@ -319,3 +319,9 @@ Java_org_bokontep_wavesynth_SynthEngine_setRecord(JNIEnv *env, jobject thiz, jbo
     engine->SetRecord(flag);
     return 0;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_sendMidiBend(JNIEnv *env, jobject thiz, jint channel,
+                                                     jint low, jint high) {
+    engine->handlePitchBend(channel,low,high);
+}

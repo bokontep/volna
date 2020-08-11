@@ -15,9 +15,9 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     ~VAEngine()
     {
         if(recBuffer!=NULL)
-        delete recBuffer;
+        delete[] recBuffer;
         if(playBuffer!=NULL)
-        delete playBuffer;
+        delete[] playBuffer;
     }
     void init(float sampleRate)
     {
@@ -36,6 +36,10 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
             }
             voices_notes[i]=-1;
         }
+        SetupRampUp(0.0,1.0,20);
+        SetupRampDown(0.0,1.0,20);
+        SetStartTrim(100);
+        SetEndTrim(250);
         oboe::AudioStreamBuilder builder;
         // The builder set methods can be chained for convenience.
         builder.setSharingMode(oboe::SharingMode::Exclusive)
@@ -75,7 +79,18 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
             if(play)
             {
                 if(playIndex<playIndexEnd) {
-                    sampleValue = sampleValue + playBuffer[playIndex];
+                    if(playIndexStart-playIndex<upSamples)
+                    {
+                        sampleValue = sampleValue + playBuffer[playIndex]*rampUp(playIndex-playIndexStart);
+                    }
+                    else if(playIndexEnd-playIndex<downSamples)
+                    {
+                        sampleValue = sampleValue + playBuffer[playIndex]*rampDown(playIndexEnd-downSamples+playIndex);
+                    } else
+                    {
+                        sampleValue = sampleValue + playBuffer[playIndex];
+                    }
+
                     playIndex = (playIndex+1) % playBufferLen;
                     if(playIndex>=playIndexEnd && playIndexStart<playIndexEnd)
                     {
@@ -227,6 +242,25 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       
     }
 
+    float rampUp(int sample)
+    {
+        float ret = upMaxValue;
+        if(sample<upSamples)
+        {
+            ret = upMinValue+sample*upfactor;
+        }
+
+        return ret;
+    }
+    float rampDown(int sample)
+    {
+        float ret = downMinValue;
+        if(sample<downSamples)
+        {
+            ret = upMaxValue-sample*downfactor;
+        }
+        return ret;
+    }
     void handleSetOctaveFactor(float factor)
     {
         for(int i=0;i<numvoices;i++)
@@ -289,12 +323,40 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 
         if(flag)
         {
-            memcpy(playBuffer,recBuffer,sizeof(float)*recBufferLen);
-            playIndexStart = recIndexStart;
-            playIndexEnd = recIndexEnd;
-            playIndex = recIndexStart;
+
+            int newStart = recIndexStart+trimStart;
+            int newEnd = recIndexEnd-trimEnd;
+            if(newStart>=recBufferLen-1)
+            {
+                newStart = 0;
+            }
+            if(newEnd<0)
+            {
+                newEnd = recIndexEnd;
+                if(newEnd<0)
+                {
+                    newEnd = 0;
+                }
+            }
+            int newLen = newEnd-newStart-1;
+            memcpy(playBuffer,&recBuffer[newStart],sizeof(float)*(newLen));
+            playIndexStart = 0;
+            playIndexEnd = newEnd;
+            playIndex = 0;
         }
         this->play = flag;
+    }
+    void SetupRampUp(float upMinValue, float upMaxValue, int ms)
+    {
+        upSamples = ((float)ms*sampleRate)/1000.0;
+        upfactor = (upMaxValue-upMinValue)/upSamples;
+        upTimeMs = ms;
+    }
+    void SetupRampDown(float downMinValue, float downMaxValue, int ms)
+    {
+        downSamples = ((float)ms*sampleRate/1000.0);
+        downfactor = (downMaxValue-downMinValue)/downSamples;
+        downTimeMs = ms;
     }
     void SetRecord(bool flag)
     {
@@ -308,13 +370,40 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         {
             if(play)
             {
-                memcpy(playBuffer,recBuffer,sizeof(float)*recBufferLen);
-                playIndexStart = recIndexStart;
-                playIndexEnd = recIndexEnd;
-                playIndex = recIndexStart;
+                int newStart = recIndexStart+trimStart;
+                int newEnd = recIndexEnd-trimEnd;
+                if(newStart>=recBufferLen)
+                {
+                    newStart = 0;
+                }
+                if(newEnd<0)
+                {
+                    newEnd = recBufferLen-1;
+                    if(newEnd<0)
+                    {
+                        newEnd = 0;
+                    }
+                }
+                int newLen = newEnd-newStart-1;
+                memcpy(playBuffer,&recBuffer[newStart],sizeof(float)*(newLen));
+                playIndexStart = 0;
+                playIndexEnd = newEnd;
+                playIndex = 0;
             }
         }
         this->record = flag;
+    }
+    int MillisecondsToSamples(int millis)
+    {
+        return (int)(((double)millis*sampleRate)/1000.0);
+    }
+    void SetStartTrim(int ms)
+    {
+        trimStart = MillisecondsToSamples(ms);
+    }
+    void SetEndTrim(int ms)
+    {
+        trimEnd  = MillisecondsToSamples(ms);
     }
     private:
       SynthVoice mSynthVoice[numvoices];
@@ -347,5 +436,19 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 
 	  bool play = false;
 	  bool record = false;
+	  float upMinValue = 0;
+	  float upMaxValue = 1.0;
+	  float downMinValue = 0;
+	  float downMaxValue = 1.0;
+	  float upfactor;
+	  float upTimeMs;
+	  int upSamples;
+	  float downfactor;
+	  float downTimeMs;
+	  int downSamples;
+	  int trimEnd = 0;
+	  int trimStart = 0;
+
+
 };
 #endif
