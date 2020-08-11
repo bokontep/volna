@@ -325,3 +325,11 @@ Java_org_bokontep_wavesynth_SynthEngine_sendMidiBend(JNIEnv *env, jobject thiz, 
                                                      jint low, jint high) {
     engine->handlePitchBend(channel,low,high);
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_sendMidiChangeNote(JNIEnv *env, jobject thiz, jint channel,
+                                                           jint oldnote, jint newnote,
+                                                           jint velocity) {
+    engine->handleNoteTransition(channel,oldnote,newnote,velocity);
+    return  0;
+}

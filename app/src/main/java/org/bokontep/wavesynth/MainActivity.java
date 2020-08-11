@@ -677,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
 
     public int transformNote(int noteIn) {
         if (tet != 12) {
-            return noteIn % 128;
+            return noteIn % (11*tet);
         }
         int notesInScale = scales[currentScale * 13];
         int relnote = noteIn - rootNote;
@@ -789,8 +789,8 @@ public class MainActivity extends AppCompatActivity {
             int id = event.getPointerId(i);
             int oscdist = -((int) (((xNoteScale - x[i] % xNoteScale) / xNoteScale) * 127) - 63);
             scopetext = scopetext + "[" + oscdist + "]";
-            int midinote = (rootNote + ((int) x[i] / xNoteScale)) % 128;
-            midinote = (transformNote(midinote) + offset) % 128;
+            int midinote = (rootNote + ((int) x[i] / xNoteScale)) % (11*tet);
+            midinote = (transformNote(midinote) + offset) % (11*tet);
             int factor = (int) height / 3;
             int wi = (int) y[i] % factor;
 
@@ -851,12 +851,15 @@ public class MainActivity extends AppCompatActivity {
                     if (offset2 > 127 || offset2 < 0) {
                         offset2 = 127;
                     }
-
-                    engine.sendMidiNoteOn(0, midinote, vel);
                     if(legato)
                     {
+                        engine.sendMidiChangeNote(0,lastnote,midinote,vel);
+                    }
+                    else {
+                        engine.sendMidiNoteOn(0, midinote, vel);
                         engine.sendMidiNoteOff(0, lastnote, 0);
                     }
+
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
                     lastnote = midinote;

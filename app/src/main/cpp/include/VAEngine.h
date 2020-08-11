@@ -37,7 +37,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
             voices_notes[i]=-1;
         }
         SetupRampUp(0.0,1.0,20);
-        SetupRampDown(0.0,1.0,20);
+        SetupRampDown(0.0,1.0,40);
         SetStartTrim(100);
         SetEndTrim(250);
         oboe::AudioStreamBuilder builder;
@@ -186,8 +186,19 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       mSynthVoice[maxnoteidx].MidiNoteOn(note, velocity);
 	  activenotes++;
     }
-    
-    void handleNoteOff(uint8_t channel, uint8_t note, uint8_t velocity)
+
+    void handleNoteTransition(int channel, int note,int newNote, int velocity)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            if(voices_notes[i]==note)
+            {
+                voices_notes[i] = newNote;
+                mSynthVoice[i].MidiChangeNote(newNote,velocity);
+            }
+        }
+    }
+    void handleNoteOff(int channel, int note, int velocity)
     {
       //digitalWrite(LED, LOW);
       for (int i = 0; i < numvoices; i++)
@@ -201,7 +212,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         }
       }
     }
-    void handlePitchBend(uint8_t channel, uint8_t bendlsb, uint8_t bendmsb)
+    void handlePitchBend(int channel, uint8_t bendlsb, uint8_t bendmsb)
     {
       
       uint16_t bend = bendmsb<<7 | bendlsb;
