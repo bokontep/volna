@@ -813,11 +813,11 @@ public class MainActivity extends AppCompatActivity {
             }
             if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
 
-                if (lastnote >= 0) {
+                //if (lastnote >= 0) {
 
-                    engine.sendMidiNoteOff(0, lastnote, 0);
-                    notemap.remove(id);
-                }
+                  //  engine.sendMidiNoteOff(0, lastnote, 0);
+                  //  notemap.remove(id);
+                //}
 
                 engine.sendMidiNoteOn(0, midinote, vel);
                 engine.selectWaveform(0, 0, midinote, waveform1);
@@ -839,9 +839,7 @@ public class MainActivity extends AppCompatActivity {
             if (action == MotionEvent.ACTION_MOVE) {
 
                 if (midinote != lastnote) {
-                    if(!legato) {
-                        engine.sendMidiNoteOff(0, lastnote, 0);
-                    }
+
                     notemap.remove(id);
                     int offset1 = 64 - oscdist;
                     int offset2 = 64 + oscdist;
@@ -856,8 +854,9 @@ public class MainActivity extends AppCompatActivity {
                         engine.sendMidiChangeNote(0,lastnote,midinote,vel);
                     }
                     else {
-                        engine.sendMidiNoteOn(0, midinote, vel);
                         engine.sendMidiNoteOff(0, lastnote, 0);
+                        engine.sendMidiNoteOn(0, midinote, vel);
+
                     }
 
                     engine.selectWaveform(0, 0, midinote, waveform1);
