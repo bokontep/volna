@@ -820,7 +820,7 @@ public class MainActivity extends AppCompatActivity {
             scope.setMarker("" + id, x[i], y[i]);
             int last = notemap[id];
             if (action == MotionEvent.ACTION_DOWN && id==index)  {
-                scope.printLine("ACTION_DOWN " + id);
+                //scope.printLine("ACTION_DOWN " + id);
                 if(last>=0)
                 {
                     engine.sendMidiNoteOff(0,last,0);
@@ -838,7 +838,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if(action == MotionEvent.ACTION_POINTER_DOWN && id==index)
             {
-                scope.printLine("ACTION_PONTER_DOWN " + id );
+                //scope.printLine("ACTION_PONTER_DOWN " + id );
                 if(last>=0)
                 {
                     engine.sendMidiNoteOff(0,last,0);
@@ -895,7 +895,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (action == MotionEvent.ACTION_POINTER_UP && id==index)
             {
-                scope.printLine("ACTION_POINTER_UP "+id);
+                //scope.printLine("ACTION_POINTER_UP "+id);
 
 
                 engine.sendMidiNoteOff(0, last, 0);
@@ -910,7 +910,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if(action == MotionEvent.ACTION_UP )
             {
-                scope.printLine("ACTION_UP "+id);
+                //scope.printLine("ACTION_UP "+id);
                 for(int n=0;n<notemap.length;n++) {
                     if(notemap[n]>0)
                     {
