@@ -1,27 +1,17 @@
 package org.bokontep.wavesynth;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatToggleButton;
-import androidx.core.view.MotionEventCompat;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.media.AudioManager;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
-import android.media.midi.MidiReceiver;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -35,20 +25,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-
 import org.bokontep.midi.MidiOutputPortConnectionSelector;
 import org.bokontep.midi.MidiPortConnector;
 import org.bokontep.midi.MidiTools;
-import org.w3c.dom.Text;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-
-import static android.view.MotionEvent.ACTION_DOWN;
-import static android.view.MotionEvent.ACTION_UP;
 import static android.view.MotionEvent.AXIS_Y;
 
 public class MainActivity extends AppCompatActivity {
@@ -79,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private String midiLog = "";
     private VolnaMidiReceiver midiReceiver;
     private Paint paint;
-    private int lastnote = -1;
+
     private int vel = -1;
     public long enterSettings;
     private int touchPoints = 0;
@@ -153,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
     private int rootNote = 36;
     private int xNoteScale = 160;
     private int currentScale = 0;
-    private HashMap<Integer, Integer> notemap = new HashMap<>();
+    private volatile int[] notemap = new int[10];
+    //private HashMap<Integer, Integer> notemap = new HashMap<>();
     private AppPreferences prefs;
     private SynthEngine engine;
     private String[] rootNotes =
@@ -194,6 +174,10 @@ public class MainActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
+        for (int i=0;i<notemap.length;i++)
+        {
+            notemap[i]= -1;
+        }
         prefs = new AppPreferences(this);
         engine = new SynthEngine(this, 44100);
         engine.initAudio();
@@ -630,6 +614,8 @@ public class MainActivity extends AppCompatActivity {
                     lastTouchEventTime = now;
                 }*/
                 scope.setData(engine.getWaveform());
+                scope.setMidilog(getNoteMap());
+
                 scope.invalidate();
                 mHandler.postDelayed(screenUpdater, updateInterval);
             }
@@ -746,6 +732,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    String getNoteMap() {
+        StringBuilder s = new StringBuilder();
+        try {
+
+
+            if (notemap == null) {
+                return "";
+            }
+            for (int i = 0; i < notemap.length; i++) {
+                if(notemap[i]>=0) {
+                    s.append(i);
+                    s.append(":");
+                    s.append(notemap[i]);
+                    s.append(" ");
+                }
+            }
+        }
+        catch (Exception e)
+        {
+
+        }
+        return s.toString();
+    }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         lastTouchEventTime = new java.util.Date().getTime();
@@ -754,6 +763,7 @@ public class MainActivity extends AppCompatActivity {
         float height = event.getDevice().getMotionRange(AXIS_Y).getRange();
         int activepointers = event.getPointerCount() % 10; // do not track more than 10
         touchPoints = activepointers;
+
         float[] x = new float[10];
         float[] y = new float[10];
         for (int i = 0; i < 10; i++) {
@@ -776,7 +786,8 @@ public class MainActivity extends AppCompatActivity {
 
         int offset = 0;
 
-        lastnote = -1;
+
+        String showIds = "";
         for (int i = 0; i < activepointers; i++) {
 
             if (y[i] > 2.0 * height / 3.0f) {
@@ -787,6 +798,8 @@ public class MainActivity extends AppCompatActivity {
                 offset = 12;
             }
             int id = event.getPointerId(i);
+
+            showIds = showIds+""+id + " ";
             int oscdist = -((int) (((xNoteScale - x[i] % xNoteScale) / xNoteScale) * 127) - 63);
             scopetext = scopetext + "[" + oscdist + "]";
             int midinote = (rootNote + ((int) x[i] / xNoteScale)) % (11*tet);
@@ -805,42 +818,45 @@ public class MainActivity extends AppCompatActivity {
                 scopetext = scopetext + "(" + vel + ")";
             }
             scope.setMarker("" + id, x[i], y[i]);
-            Integer last = notemap.get(id);
-            if (last != null) {
-                lastnote = last.intValue();
-            } else {
-                lastnote = -1;
-            }
-            if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
-
-                //if (lastnote >= 0) {
-
-                  //  engine.sendMidiNoteOff(0, lastnote, 0);
-                  //  notemap.remove(id);
-                //}
-
-                engine.sendMidiNoteOn(0, midinote, vel);
-                engine.selectWaveform(0, 0, midinote, waveform1);
-                engine.selectWaveform(0, 1, midinote, waveform2);
-                lastnote = midinote;
-                notemap.put(id, lastnote);
-
-            }
-
-
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_POINTER_UP) {
-                if (lastnote >= 0) {
-                    engine.sendMidiNoteOff(0, lastnote, 0);
+            int last = notemap[id];
+            if (action == MotionEvent.ACTION_DOWN && id==index)  {
+                scope.printLine("ACTION_DOWN " + id);
+                if(last>=0)
+                {
+                    engine.sendMidiNoteOff(0,last,0);
+                    notemap[id] = -1;
                 }
-                scope.unsetMarker("" + id);
-                lastnote = -1;
-                notemap.remove(id);
+
+                if(midinote>=0) {
+                    engine.sendMidiNoteOn(0, midinote, vel);
+                    engine.selectWaveform(0, 0, midinote, waveform1);
+                    engine.selectWaveform(0, 1, midinote, waveform2);
+
+                    notemap[id] = midinote;
+                }
+
             }
-            if (action == MotionEvent.ACTION_MOVE) {
+            if(action == MotionEvent.ACTION_POINTER_DOWN && id==index)
+            {
+                scope.printLine("ACTION_PONTER_DOWN " + id );
+                if(last>=0)
+                {
+                    engine.sendMidiNoteOff(0,last,0);
+                    notemap[id] = -1;
+                }
 
-                if (midinote != lastnote) {
+                if(midinote>=0) {
+                    engine.sendMidiNoteOn(0, midinote, vel);
+                    engine.selectWaveform(0, 0, midinote, waveform1);
+                    engine.selectWaveform(0, 1, midinote, waveform2);
 
-                    notemap.remove(id);
+                    notemap[id] = midinote;
+                }
+            }
+            if (action == MotionEvent.ACTION_MOVE )
+            {
+                //scope.printLine("ACTION_MOVE");
+                if (midinote >= 0) {
                     int offset1 = 64 - oscdist;
                     int offset2 = 64 + oscdist;
                     if (offset1 < 0 || offset1 > 127) {
@@ -849,35 +865,75 @@ public class MainActivity extends AppCompatActivity {
                     if (offset2 > 127 || offset2 < 0) {
                         offset2 = 127;
                     }
-                    if(legato)
-                    {
-                        engine.sendMidiChangeNote(0,lastnote,midinote,vel);
-                    }
-                    else {
-                        engine.sendMidiNoteOff(0, lastnote, 0);
-                        engine.sendMidiNoteOn(0, midinote, vel);
-
-                    }
-
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
-                    lastnote = midinote;
-                    notemap.put(id, lastnote);
+
+                    if(legato)
+                    {
+                        if(last>=0 && last!=midinote) {
+                            engine.sendMidiChangeNote(0, last, midinote, vel);
+                        }
+                    }
+                    else {
+                        if(last>=0 && last!=midinote) {
+                            engine.sendMidiNoteOff(0, last, 0);
+                            engine.sendMidiNoteOn(0, midinote, vel);
+                        }
+                    }
+
+                    notemap[id]=midinote;
+
                 } else {
                     float spreadFactor = (float) (maxSpread / 127.0);
                     oscdist = (int) (spreadFactor * oscdist);
                     engine.sendMidiNoteSpread(0, midinote, 63 + oscdist);
+
                 }
 
 
             }
+
+            if (action == MotionEvent.ACTION_POINTER_UP && id==index)
+            {
+                scope.printLine("ACTION_POINTER_UP "+id);
+
+
+                engine.sendMidiNoteOff(0, last, 0);
+                engine.sendMidiNoteOff(0, midinote, 0);
+
+
+
+                notemap[id]=-1;
+                scope.unsetMarker("" + index);
+
+
+            }
+            if(action == MotionEvent.ACTION_UP )
+            {
+                scope.printLine("ACTION_UP "+id);
+                for(int n=0;n<notemap.length;n++) {
+                    if(notemap[n]>0)
+                    {
+                        engine.sendMidiNoteOff(0, notemap[n], 0);
+
+                    }
+                    scope.unsetMarker("" + n);
+                    notemap[n]=-1;
+
+                }
+
+
+
+
+            }
+
         }
         if(legato)
         {
             scopetext = scopetext+" L";
         }
         scope.setText(scopetext);
-        return super.onTouchEvent(event);
+        return true;//return super.onTouchEvent(event);
     }
 
     public void logMidi(byte[] data) {

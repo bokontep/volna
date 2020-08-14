@@ -63,7 +63,7 @@ public class MidiPortConnector {
          *            a {@link MidiConnection} that represents the connected
          *            ports, or null if connection failed
          */
-        abstract public void onPortsConnected(MidiConnection connection);
+        void onPortsConnected(MidiConnection connection);
     }
 
     /**

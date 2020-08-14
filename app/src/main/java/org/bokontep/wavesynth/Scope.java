@@ -32,6 +32,7 @@ public class Scope extends View {
     public static final int STATE_PLAY=0;
     public static final int STATE_SETTINGS=1;
     private int xNoteScale = 160;
+    String[] lines;
     public Scope(Context context, AttributeSet attrs)
     {
         super(context,attrs);
@@ -42,6 +43,7 @@ public class Scope extends View {
         {
             data[i] = 0.0f;
         }
+        lines = new String[14];
         setupPaint();
     }
     public void setXNoteScale(int xNoteScale)
@@ -157,12 +159,45 @@ public class Scope extends View {
         }
         if(midiLog!=null)
         {
-            canvas.drawText(this.midiLog,30, 130,drawPaintBackground);
+            canvas.drawText(this.midiLog,30, 130,drawPaintForeground);
         }
+        if(lines!=null)
+        {
+            for(int i=0;i<lines.length;i++)
+            {
+                if(lines[i]!=null) {
+                    canvas.drawText(lines[i], 30, 210 + i * 60, drawPaintForeground);
+                }
+            }
+        }
+    }
+    int index = 0;
+    void printLine(String str)
+    {
+        if(lines==null)
+        {
+            return;
+        }
+        if(index<lines.length) {
+            lines[index++] = str;
+        }
+        else
+        {
+            for(int i=1;i<lines.length;i++)
+            {
+                lines[i-1] = lines[i];
+            }
+            lines[lines.length-1] = str;
+        }
+        invalidate();
     }
     public void setMidilog(String text)
     {
         this.midiLog = text;
+    }
+    public void setPageText(String[] pagetext)
+    {
+
     }
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
@@ -170,10 +205,10 @@ public class Scope extends View {
         this.w = w;
         this.h = h;
         if(data!=null) {
-            xstep = (int)(w / data.length);
-            ystep = (int)(h/2.0f);
-            xstart = (int)0;
-            ystart = (int)(h/2.0f);
+            xstep = (w / data.length);
+            ystep = (h/2.0f);
+            xstart = 0;
+            ystart = (h/2.0f);
         }
         else
         {
@@ -187,6 +222,6 @@ public class Scope extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        return super.onTouchEvent(event);
+        return false;//super.onTouchEvent(event);
     }
 }

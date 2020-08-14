@@ -36,10 +36,10 @@ public class MidiConstants {
     public static final byte STATUS_RESET = (byte) 0xFF;
 
     /** Number of bytes in a message nc from 8c to Ec */
-    public final static int CHANNEL_BYTE_LENGTHS[] = { 3, 3, 3, 3, 2, 2, 3 };
+    public final static int[] CHANNEL_BYTE_LENGTHS = { 3, 3, 3, 3, 2, 2, 3 };
 
     /** Number of bytes in a message Fn from F0 to FF */
-    public final static int SYSTEM_BYTE_LENGTHS[] = { 1, 2, 3, 2, 1, 1, 1, 1, 1,
+    public final static int[] SYSTEM_BYTE_LENGTHS = { 1, 2, 3, 2, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1 };
 
     public final static int MAX_CHANNELS = 16;

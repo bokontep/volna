@@ -62,15 +62,16 @@ public:
         osc[0].ResetPhase();
         osc[1].ResetPhase();
     }
-    void MidiChangeNote(int newNote, int vel)
+    void MidiChangeNote(int note, int vel)
     {
         //float f = pow(octave_factor,(newNote*1.0-69.0)/tet)*tune;
-        float f = pow(octave_factor,(newNote*1.0-(tet*5.75))/tet)*tune;
+        float f = pow(octave_factor,(note*1.0-(tet*5.75))/tet)*tune;
         velocity = vel/127.0;
         freq1 = f;
         freq2 = f;
         osc[0].SetFrequency(freq1,sampleRate);
         osc[1].SetFrequency(freq2,sampleRate);
+
 
     }
     void Lfo1SetFrequency(float frequency)

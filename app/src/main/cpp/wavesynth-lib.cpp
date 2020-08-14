@@ -192,7 +192,7 @@ Java_org_bokontep_wavesynth_SynthEngine_sendMidiCC(JNIEnv *env,
                         jint data
         )
 {
-    engine->handleControlChange((uint8_t)channel,(uint8_t)cc,(uint8_t)data);
+    engine->handleControlChange(channel,cc,data);
     return 0;
 }
 
@@ -208,7 +208,7 @@ Java_org_bokontep_wavesynth_SynthEngine_sendMidiNoteOn(
                                                         jint velocity
 )
 {
-    engine->handleNoteOn((uint8_t)channel,(uint8_t)note, (uint8_t)velocity);
+    engine->handleNoteOn(channel,note, velocity);
 return 0;
 }
 
@@ -222,7 +222,7 @@ Java_org_bokontep_wavesynth_SynthEngine_sendMidiNoteOff(
         jint velocity
 )
 {
-    engine->handleNoteOff((uint8_t)channel,(uint8_t)note, (uint8_t)velocity);
+    engine->handleNoteOff(channel,note, velocity);
     return 0;
 }
 extern "C"

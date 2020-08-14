@@ -21,7 +21,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     }
     void init(float sampleRate)
     {
-        recBufferLen = sampleRate*60;
+        recBufferLen = ((int)sampleRate)*60;
         recBuffer = new float[recBufferLen]; // allocate buffers for one minute recording/playback
         playBufferLen = sampleRate*60;
         playBuffer = new float[playBufferLen];
@@ -52,7 +52,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         // Typically, start the stream after querying some stream information, as well as some input from the user
         outStream->requestStart();
     }
-	
+
     void update(void)
     {
         /*
@@ -68,7 +68,14 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       release(block);
       */
     }
+    void onErrorBeforeClose(oboe::AudioStream *oboeStream, oboe::Result error)
+    {
 
+    }
+    void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result error)
+    {
+        init(sampleRate);
+    }
 
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream,
                                             void* audioData,int32_t numFrames) override
@@ -132,7 +139,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	  //return s;
 	  
     }
-    void handleNoteSpread(uint8_t channel, uint8_t note, uint8_t spread)
+    void handleNoteSpread(int channel, int note, int spread)
     {
         for(int i=0;i<numvoices;i++)
         {
@@ -160,7 +167,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         }
     }
 
-	void handleNoteOn(uint8_t channel, uint8_t note, uint8_t velocity)
+	void handleNoteOn(int channel, int note, int velocity)
     {
       //bool found = false;
       int maxnote = -1;
@@ -187,14 +194,16 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	  activenotes++;
     }
 
-    void handleNoteTransition(int channel, int note,int newNote, int velocity)
+    void handleNoteTransition(int channel, int oldnote,int newNote, int velocity)
     {
         for(int i=0;i<numvoices;i++)
         {
-            if(voices_notes[i]==note)
+            if(voices_notes[i] == oldnote)
             {
                 voices_notes[i] = newNote;
                 mSynthVoice[i].MidiChangeNote(newNote,velocity);
+
+
             }
         }
     }

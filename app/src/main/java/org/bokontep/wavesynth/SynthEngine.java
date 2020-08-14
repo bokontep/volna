@@ -28,7 +28,7 @@ public class SynthEngine {
             int defaultFramesPerBurst = Integer.parseInt(framesPerBurstStr);
 
             setVAEngineDefaultStreamValues(defaultSampleRate, defaultFramesPerBurst);
-            initVAEngine(defaultSampleRate);
+            initVAEngine(sampleRate);
 
 
 
