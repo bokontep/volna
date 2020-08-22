@@ -3,7 +3,7 @@
 
 #include <oboe/Oboe.h>
 #include "SynthVoice.h"
- 
+#include "Delay.h"
 template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public oboe::AudioStreamCallback
 {
   public:
@@ -18,9 +18,17 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         delete[] recBuffer;
         if(playBuffer!=NULL)
         delete[] playBuffer;
+        if(delay)
+        delete delay;
     }
     void init(float sampleRate)
     {
+        delay = new Delay(sampleRate);
+        delay->SetFeedback(0.5);
+
+        delay->SetDelay(sampleRate);
+        delay->Reset();
+        SetDelayLevel(0.0);
         recBufferLen = ((int)sampleRate)*60;
         recBuffer = new float[recBufferLen]; // allocate buffers for one minute recording/playback
         playBufferLen = sampleRate*60;
@@ -135,6 +143,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       {
         s = s + (mSynthVoice[i].Process() );
       }
+      s = s + delayLevel*delay->Process(s);
        return s/((float)numvoices);
 	  //return s;
 	  
@@ -425,6 +434,18 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     {
         trimEnd  = MillisecondsToSamples(ms);
     }
+    void SetDelayLevel(float level)
+    {
+        this->delayLevel = level;
+    }
+    void SetDelayLength(int length)
+    {
+        delay->SetDelay(length);
+    }
+    void SetDelayFeedback(float feedback)
+    {
+        delay->SetFeedback(feedback);
+    }
     private:
       SynthVoice mSynthVoice[numvoices];
       int voices_notes[numvoices];
@@ -468,7 +489,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	  int downSamples;
 	  int trimEnd = 0;
 	  int trimStart = 0;
-
-
+	  float delayLevel = 0.0f;
+	  Delay* delay;
 };
 #endif

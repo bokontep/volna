@@ -74,6 +74,9 @@ public class SynthEngine {
     public native int setOctaveFactor(float factor);
     public native int setRecord(boolean flag);
     public native int setPlay(boolean flag);
+    public native int setDelayLevel(int level);
+    public native int setDelayTime(int time);
+    public native int setDelayFeedback(int feedback);
 
     public int getSampleRate() {
         return sampleRate;

@@ -15,6 +15,7 @@ std::mt19937 eng{std::random_device()()};
 float wavedata[256];
 float data[256];
 int index = 0;
+int sr = 0;
 void initWaveforms(bool bandlimit,float freq,float q)
 {
     float sintable[WTLEN];
@@ -167,6 +168,7 @@ Java_org_bokontep_wavesynth_SynthEngine_initVAEngine(JNIEnv *env, jobject thiz, 
     // TODO: implement initVAEngine()
     initWaveforms(true,0.5,0.6);
     engine = new VAEngine<POLYPHONY,WTCOUNT,WTLEN>(Waveforms);
+    sr = sample_rate;
     engine->init(sample_rate);
     return 0;
 }
@@ -180,6 +182,7 @@ Java_org_bokontep_wavesynth_SynthEngine_setVAEngineDefaultStreamValues(JNIEnv *e
     // TODO: implement native_setDefaultStreamValues()
     oboe::DefaultStreamValues::SampleRate = (int32_t) sample_rate;
     oboe::DefaultStreamValues::FramesPerBurst = (int32_t) frames_per_burst;
+    sr = sample_rate;
     return 0;
 }
 
@@ -333,4 +336,26 @@ Java_org_bokontep_wavesynth_SynthEngine_sendMidiChangeNote(JNIEnv *env, jobject 
                                                            jint velocity) {
     engine->handleNoteTransition(channel,oldnote,newnote,velocity);
     return  0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setDelayLevel(JNIEnv *env, jobject thiz, jint level) {
+
+    engine->SetDelayLevel(level/255.0);
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setDelayTime(JNIEnv *env, jobject thiz, jint time) {
+    engine->SetDelayLength((time*sr)/255);
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setDelayFeedback(JNIEnv *env, jobject thiz, jint feedback) {
+    engine->SetDelayFeedback(0.99*((float)feedback/255.0));
+    return 0;
 }

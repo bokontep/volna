@@ -411,6 +411,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:text="Delay Level" />
+            <SeekBar
+                android:id="@+id/delayLevelSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Delay Time(samples)" />
+            <SeekBar
+                android:id="@+id/delayTimeSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Delay Feedback" />
+            <SeekBar
+                android:id="@+id/delayFeedbackSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="255"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
                 android:text="Grid size" />
 
             <SeekBar

@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     private int osc1WaveControl = 0;
     private int osc2Wave = 0;
     private int osc2WaveControl = 0;
+    private int delayLevel = 0;
+    private int delayTime = 0;
+    private int delayFeedback = 0;
     private int tet = 12;
     private float tune = 440.0f;
     private float octaveFactor = 2.0f;
@@ -102,6 +105,9 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc1WaveControlSeekBar;
     private SeekBar osc2WaveSeekBar;
     private SeekBar osc2WaveControlSeekBar;
+    private SeekBar delayLevelSeekBar;
+    private SeekBar delayTimeSeekBar;
+    private SeekBar delayFeedbackSeekBar;
     private SeekBar gridSizeSeekBar;
     private TextView tuneTextView;
     private TextView tetTextView;
@@ -180,6 +186,9 @@ public class MainActivity extends AppCompatActivity {
         }
         prefs = new AppPreferences(this);
         engine = new SynthEngine(this, 44100);
+        delayLevel = prefs.readInt("delayLevel",0);
+        delayTime = prefs.readInt("delayTime",0);
+        delayFeedback = prefs.readInt("delayFeedback",0);
         engine.initAudio();
         engine.setOsc1Volume(prefs.readInt("osc1Volume", 127));
         engine.setOsc2Volume(prefs.readInt("osc2Volume", 127));
@@ -191,7 +200,9 @@ public class MainActivity extends AppCompatActivity {
         engine.setOsc2Decay(prefs.readInt("osc2Decay", 0));
         engine.setOsc2Sustain(prefs.readInt("osc2Sustain", 127));
         engine.setOsc2Release(prefs.readInt("osc2Release", 0));
-
+        engine.setDelayLevel(delayLevel);
+        engine.setDelayTime(delayTime);
+        engine.setDelayFeedback(delayFeedback);
         tune = (prefs.readInt("tune", 4400) / 10.0f);
         tet = prefs.readInt("tet", 12);
         octaveFactor = (prefs.readInt("octaveFactor",2000)/1000.0f);
@@ -333,6 +344,12 @@ public class MainActivity extends AppCompatActivity {
         this.osc1WaveControlSeekBar.setProgress(osc1WaveControl);
         this.osc2WaveControlSeekBar = (SeekBar) findViewById(R.id.osc2WaveControlSeekBar);
         this.osc2WaveControlSeekBar.setProgress(osc2WaveControl);
+        this.delayLevelSeekBar = (SeekBar) findViewById(R.id.delayLevelSeekBar);
+        this.delayLevelSeekBar.setProgress(delayLevel);
+        this.delayTimeSeekBar = (SeekBar) findViewById(R.id.delayTimeSeekBar);
+        this.delayTimeSeekBar.setProgress(delayTime);
+        this.delayFeedbackSeekBar = (SeekBar) findViewById(R.id.delayFeedbackSeekBar);
+        this.delayFeedbackSeekBar.setProgress(delayFeedback);
         this.tuneTextView = (TextView) findViewById(R.id.tuneText);
         this.tuneTextView.setText("A frequency (Hz):" + tune);
         this.osc1AttackTextView = (TextView) findViewById(R.id.osc1AttackText);
@@ -482,6 +499,21 @@ public class MainActivity extends AppCompatActivity {
 
                         prefs.writeInt("osc2WaveControl", osc2WaveControl);
                         break;
+                    case R.id.delayLevelSeekBar:
+                        delayLevel = progress;
+                        engine.setDelayLevel(delayLevel);
+                        prefs.writeInt("delayLevel",delayLevel);
+                        break;
+                    case R.id.delayTimeSeekBar:
+                        delayTime = progress;
+                        engine.setDelayTime(delayTime);
+                        prefs.writeInt("delayTime",delayTime);
+                        break;
+                    case R.id.delayFeedbackSeekBar:
+                        delayFeedback = progress;
+                        engine.setDelayFeedback(delayFeedback);
+                        prefs.writeInt("delayFeedback",delayFeedback);
+                        break;
                     case R.id.gridSizeSeekBar:
                         xNoteScale = progress;
                         prefs.writeInt("xNoteScale", xNoteScale);
@@ -514,11 +546,14 @@ public class MainActivity extends AppCompatActivity {
         this.osc2ReleaseSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.maxSpreadSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.gridSizeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
-        ;
+
         this.osc1WaveSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2WaveSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2WaveControlSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.delayLevelSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.delayTimeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.delayFeedbackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.settingsButton = (Button) findViewById(R.id.toggleSettingsButton);
         this.recButton = (Button)findViewById(R.id.recButton);
         this.recButton.setBackgroundColor(Color.GRAY);
