@@ -477,7 +477,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
-                android:text="Select a midi device"
+                android:text="Select an input midi device"
                 />
             <Spinner
                 android:id="@+id/spinnerMidiDevice"
@@ -485,6 +485,23 @@
                 android:layout_height="wrap_content"
                 android:entries="@array/senders"
             />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Select an output midi device"
+                />
+            <Spinner
+                android:id="@+id/spinnerInputMidiDevice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/senders"
+                />
         </LinearLayout>
 
 

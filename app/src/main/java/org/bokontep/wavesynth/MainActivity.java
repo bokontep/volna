@@ -10,6 +10,7 @@ import android.graphics.Paint;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
+import android.media.midi.MidiReceiver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -25,9 +26,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import org.bokontep.midi.MidiConstants;
+import org.bokontep.midi.MidiInputPortSelector;
 import org.bokontep.midi.MidiOutputPortConnectionSelector;
 import org.bokontep.midi.MidiPortConnector;
 import org.bokontep.midi.MidiTools;
+
+import java.io.IOException;
+
 import static android.view.MotionEvent.AXIS_Y;
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private String midiLog = "";
     private VolnaMidiReceiver midiReceiver;
     private Paint paint;
-
+    private byte[] mByteBuffer = new byte[3];
     private int vel = -1;
     public long enterSettings;
     private int touchPoints = 0;
@@ -80,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean red = false;
     private MidiManager midiManager;
     public MidiOutputPortConnectionSelector midiPortSelector;
+    public MidiInputPortSelector midiInputPortSelector;
     private int updateInterval = 20;
     private Handler mHandler;
     private Runnable screenUpdater;
@@ -190,19 +198,7 @@ public class MainActivity extends AppCompatActivity {
         delayTime = prefs.readInt("delayTime",0);
         delayFeedback = prefs.readInt("delayFeedback",0);
         engine.initAudio();
-        engine.setOsc1Volume(prefs.readInt("osc1Volume", 127));
-        engine.setOsc2Volume(prefs.readInt("osc2Volume", 127));
-        engine.setOsc1Attack(prefs.readInt("osc1Attack", 10));
-        engine.setOsc1Decay(prefs.readInt("osc1Decay", 0));
-        engine.setOsc1Sustain(prefs.readInt("osc1Sustain", 127));
-        engine.setOsc1Release(prefs.readInt("osc1Release", 0));
-        engine.setOsc2Attack(prefs.readInt("osc2Attack", 10));
-        engine.setOsc2Decay(prefs.readInt("osc2Decay", 0));
-        engine.setOsc2Sustain(prefs.readInt("osc2Sustain", 127));
-        engine.setOsc2Release(prefs.readInt("osc2Release", 0));
-        engine.setDelayLevel(delayLevel);
-        engine.setDelayTime(delayTime);
-        engine.setDelayFeedback(delayFeedback);
+
         tune = (prefs.readInt("tune", 4400) / 10.0f);
         tet = prefs.readInt("tet", 12);
         octaveFactor = (prefs.readInt("octaveFactor",2000)/1000.0f);
@@ -218,7 +214,19 @@ public class MainActivity extends AppCompatActivity {
         osc1WaveControl = prefs.readInt("osc1WaveControl", 255);
         osc2WaveControl = prefs.readInt("osc2WaveControl", 255);
         engine.initSynthParameters();
-
+        engine.setOsc1Volume(prefs.readInt("osc1Volume", 127));
+        engine.setOsc2Volume(prefs.readInt("osc2Volume", 127));
+        engine.setOsc1Attack(prefs.readInt("osc1Attack", 10));
+        engine.setOsc1Decay(prefs.readInt("osc1Decay", 0));
+        engine.setOsc1Sustain(prefs.readInt("osc1Sustain", 127));
+        engine.setOsc1Release(prefs.readInt("osc1Release", 0));
+        engine.setOsc2Attack(prefs.readInt("osc2Attack", 10));
+        engine.setOsc2Decay(prefs.readInt("osc2Decay", 0));
+        engine.setOsc2Sustain(prefs.readInt("osc2Sustain", 127));
+        engine.setOsc2Release(prefs.readInt("osc2Release", 0));
+        engine.setDelayLevel(delayLevel);
+        engine.setDelayTime(delayTime);
+        engine.setDelayFeedback(delayFeedback);
         engine.setTune(tune);
         engine.setTet(tet);
         engine.setOctaveFactor(octaveFactor);
@@ -628,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
         redToggleButton.setChecked(red);
         legatoToggleButton.setChecked(legato);
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_MIDI)) {
-            setupMidi(R.id.spinnerMidiDevice);
+            setupMidi(R.id.spinnerMidiDevice,R.id.spinnerInputMidiDevice);
         } else {
             Toast.makeText(MainActivity.this,
                     "MIDI not supported!", Toast.LENGTH_LONG)
@@ -859,11 +867,13 @@ public class MainActivity extends AppCompatActivity {
                 if(last>=0)
                 {
                     engine.sendMidiNoteOff(0,last,0);
+                    noteOff(0,last%128,0);
                     notemap[id] = -1;
                 }
 
                 if(midinote>=0) {
                     engine.sendMidiNoteOn(0, midinote, vel);
+                    noteOn(0,midinote%128, vel);
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
 
@@ -877,11 +887,15 @@ public class MainActivity extends AppCompatActivity {
                 if(last>=0)
                 {
                     engine.sendMidiNoteOff(0,last,0);
+                    noteOff(0,last%128,0);
+
                     notemap[id] = -1;
                 }
 
                 if(midinote>=0) {
                     engine.sendMidiNoteOn(0, midinote, vel);
+                    noteOn(0,midinote%128,vel);
+
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
 
@@ -907,12 +921,17 @@ public class MainActivity extends AppCompatActivity {
                     {
                         if(last>=0 && last!=midinote) {
                             engine.sendMidiChangeNote(0, last, midinote, vel);
+                            noteOff(0,last%127,0);
+                            noteOn(0,midinote,vel);
                         }
                     }
                     else {
                         if(last>=0 && last!=midinote) {
                             engine.sendMidiNoteOff(0, last, 0);
+
                             engine.sendMidiNoteOn(0, midinote, vel);
+                            noteOff(0,last%128,0);
+                            noteOn(0,midinote,vel);
                         }
                     }
 
@@ -935,7 +954,8 @@ public class MainActivity extends AppCompatActivity {
 
                 engine.sendMidiNoteOff(0, last, 0);
                 engine.sendMidiNoteOff(0, midinote, 0);
-
+                noteOff(0,last%128,0);
+                noteOff(0,midinote%128,0);
 
 
                 notemap[id]=-1;
@@ -950,8 +970,9 @@ public class MainActivity extends AppCompatActivity {
                     if(notemap[n]>0)
                     {
                         engine.sendMidiNoteOff(0, notemap[n], 0);
-
+                        noteOff(0,notemap[n]%127,0);
                     }
+
                     scope.unsetMarker("" + n);
                     notemap[n]=-1;
 
@@ -1002,7 +1023,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupMidi(int spinnerID) {
+    private void setupMidi(int spinnerID, int spinnerID2) {
         // Setup MIDI
         midiManager = (MidiManager) getSystemService(MIDI_SERVICE);
 
@@ -1038,5 +1059,46 @@ public class MainActivity extends AppCompatActivity {
         midiReceiver = new VolnaMidiReceiver(engine);
 
         VolnaMidiDeviceService.setMidiReceiver(midiReceiver);
+        midiInputPortSelector = new MidiInputPortSelector(midiManager,this,spinnerID2);
     }
+
+
+    private void noteOff(int channel, int pitch, int velocity) {
+        midiCommand(MidiConstants.STATUS_NOTE_OFF | channel, pitch, velocity);
+    }
+
+    private void noteOn(int channel, int pitch, int velocity) {
+        midiCommand(MidiConstants.STATUS_NOTE_ON | channel, pitch, velocity);
+    }
+
+    private void midiCommand(int status, int data1, int data2) {
+        mByteBuffer[0] = (byte) status;
+        mByteBuffer[1] = (byte) data1;
+        mByteBuffer[2] = (byte) data2;
+        long now = System.nanoTime();
+        midiSend(mByteBuffer, 3, now);
+    }
+
+    private void midiCommand(int status, int data1) {
+        mByteBuffer[0] = (byte) status;
+        mByteBuffer[1] = (byte) data1;
+        long now = System.nanoTime();
+        midiSend(mByteBuffer, 2, now);
+    }
+    private void midiSend(byte[] buffer, int count, long timestamp)
+    {
+        try {
+            if (this.midiInputPortSelector != null) {
+                MidiReceiver receiver = this.midiInputPortSelector.getReceiver();
+                if(receiver!=null) {
+                    receiver.send(buffer, 0, count, timestamp);
+                }
+            }
+        }
+        catch (IOException e) {
+
+        }
+
+    }
+
 }
