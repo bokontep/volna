@@ -29,12 +29,18 @@
             android:layout_height="wrap_content"
             android:minWidth="800px"
             android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30sp"
+                android:textColor="#ff0000"
+                android:text="ВОКОИТЕР"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="30sp"
-                android:text="волна v.0.7"/>
+                android:text="волна v.0.8"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
