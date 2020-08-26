@@ -914,8 +914,12 @@ public class MainActivity extends AppCompatActivity {
                     if (offset2 > 127 || offset2 < 0) {
                         offset2 = 127;
                     }
+
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
+                    polyAftertouch(0,midinote,vel);
+
+                    sendCC(0,id+1,(waveform1>>1)%128);
 
                     if(legato)
                     {
@@ -1070,7 +1074,14 @@ public class MainActivity extends AppCompatActivity {
     private void noteOn(int channel, int pitch, int velocity) {
         midiCommand(MidiConstants.STATUS_NOTE_ON | channel, pitch, velocity);
     }
-
+    private void sendCC(int channel, int cc, int data)
+    {
+        midiCommand(MidiConstants.STATUS_CONTROL_CHANGE | channel, cc, data);
+    }
+    private void polyAftertouch(int channel, int pitch, int velocity)
+    {
+        midiCommand(MidiConstants.STATUS_POLYPHONIC_AFTERTOUCH | channel, pitch, velocity);
+    }
     private void midiCommand(int status, int data1, int data2) {
         mByteBuffer[0] = (byte) status;
         mByteBuffer[1] = (byte) data1;
