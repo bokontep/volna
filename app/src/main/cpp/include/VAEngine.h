@@ -48,6 +48,10 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         SetupRampDown(0.0,1.0,40);
         SetStartTrim(100);
         SetEndTrim(250);
+        oboeInit();
+    }
+    void oboeInit()
+    {
         oboe::AudioStreamBuilder builder;
         // The builder set methods can be chained for convenience.
         builder.setSharingMode(oboe::SharingMode::Exclusive)
@@ -60,7 +64,6 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
         // Typically, start the stream after querying some stream information, as well as some input from the user
         outStream->requestStart();
     }
-
     void update(void)
     {
         /*
@@ -82,7 +85,8 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     }
     void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result error)
     {
-        init(sampleRate);
+        oboeInit();
+        //init(sampleRate);
     }
 
     oboe::DataCallbackResult onAudioReady(oboe::AudioStream *oboeStream,
@@ -94,20 +98,31 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
             if(play)
             {
                 if(playIndex<playIndexEnd) {
+
                     if(playIndexStart-playIndex<upSamples)
                     {
-                        sampleValue = sampleValue + playBuffer[playIndex]*rampUp(playIndex-playIndexStart);
+                        int up = playIndex-playIndexStart;
+                        if(up>=0)
+                        {
+                            sampleValue = sampleValue + playBuffer[playIndex]*rampUp(up);
+                        }
+
                     }
                     else if(playIndexEnd-playIndex<downSamples)
                     {
-                        sampleValue = sampleValue + playBuffer[playIndex]*rampDown(playIndexEnd-downSamples+playIndex);
+                        int down = playIndexEnd-downSamples+playIndex;
+                        if(down>0) {
+                            sampleValue = sampleValue + playBuffer[playIndex] * rampDown(down);
+                        }
                     } else
                     {
-                        sampleValue = sampleValue + playBuffer[playIndex];
+                        if(playIndex>0)
+                            sampleValue = sampleValue + playBuffer[playIndex];
                     }
-
-                    playIndex = (playIndex+1) % playBufferLen;
-                    if(playIndex>=playIndexEnd && playIndexStart<playIndexEnd)
+                    if(playBufferLen>0) {
+                        playIndex = (playIndex + 1) % playBufferLen;
+                    }
+                    if(playIndex>=playIndexEnd && playIndexStart<playIndexEnd && playIndexStart>=0)
                     {
                         playIndex = playIndexStart;
                     }
@@ -368,6 +383,10 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
                 }
             }
             int newLen = newEnd-newStart-1;
+            if(newLen<0)
+            {
+                newLen =0;
+            }
             memcpy(playBuffer,&recBuffer[newStart],sizeof(float)*(newLen));
             playIndexStart = 0;
             playIndexEnd = newEnd;
@@ -378,13 +397,24 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     void SetupRampUp(float upMinValue, float upMaxValue, int ms)
     {
         upSamples = ((float)ms*sampleRate)/1000.0;
-        upfactor = (upMaxValue-upMinValue)/upSamples;
+        if(upSamples >0) {
+            upfactor = (upMaxValue - upMinValue) / upSamples;
+        }
+        else
+        {
+            upfactor = 0;
+        }
         upTimeMs = ms;
     }
     void SetupRampDown(float downMinValue, float downMaxValue, int ms)
     {
         downSamples = ((float)ms*sampleRate/1000.0);
-        downfactor = (downMaxValue-downMinValue)/downSamples;
+        if(downSamples>0) {
+            downfactor = (downMaxValue - downMinValue) / downSamples;
+        } else
+        {
+            downfactor = 0;
+        }
         downTimeMs = ms;
     }
     void SetRecord(bool flag)
@@ -483,7 +513,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 	  float downMaxValue = 1.0;
 	  float upfactor;
 	  float upTimeMs;
-	  int upSamples;
+	  int upSamples ;
 	  float downfactor;
 	  float downTimeMs;
 	  int downSamples;

@@ -131,11 +131,12 @@ public:
     {
       this->fmod3 = fmod/64;
     }
-    void noteSpread( uint8_t note, uint8_t spread)
+    void noteSpread( int note, int spread)
     {
-        float factor = pow(2.0,1.0/12.0)/127;
-        float bendfreq1 = freq1+freq1*factor*(spread-63)/63;
-        float bendfreq2 = freq2-freq2*factor*(spread-63)/63;
+        spread = spread-63;
+        float factor = pow(2.0,1.0/12.0)/100.0;
+        float bendfreq1 = freq1+freq1*factor*((float)spread/63.0);
+        float bendfreq2 = freq2-freq2*factor*((float)spread/63.0);
 
         osc[0].SetFrequency(bendfreq1,sampleRate);
         osc[1].SetFrequency(bendfreq2,sampleRate);

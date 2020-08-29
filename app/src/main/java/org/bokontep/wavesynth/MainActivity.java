@@ -917,9 +917,7 @@ public class MainActivity extends AppCompatActivity {
 
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
-                    polyAftertouch(0,midinote,vel);
 
-                    sendCC(0,id+1,(waveform1>>1)%128);
 
                     if(legato)
                     {
@@ -938,13 +936,16 @@ public class MainActivity extends AppCompatActivity {
                             noteOn(0,midinote,vel);
                         }
                     }
+                    if(last>0 && last==midinote) {
+                        float spreadFactor = (float) (maxSpread / 127.0);
+                        oscdist = (int) (spreadFactor * oscdist);
+                        engine.sendMidiNoteSpread(0, midinote, 63 + oscdist);
+                    }
 
                     notemap[id]=midinote;
+                    polyAftertouch(0,midinote,vel);
 
-                } else {
-                    float spreadFactor = (float) (maxSpread / 127.0);
-                    oscdist = (int) (spreadFactor * oscdist);
-                    engine.sendMidiNoteSpread(0, midinote, 63 + oscdist);
+                    sendCC(0,id+1,(waveform1>>1)%128);
 
                 }
 
