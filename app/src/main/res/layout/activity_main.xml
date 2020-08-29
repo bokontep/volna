@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="30sp"
-                android:text="волна v.0.8"/>
+                android:text="волна v.0.8c"/>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
