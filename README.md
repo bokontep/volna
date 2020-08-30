@@ -1,5 +1,7 @@
 # volna - wavetable touch synthesizer for android
 
+(for greek text, scroll down)
+
 For a prebuilt apk you can install on your android device, go to the releases.
 https://github.com/bokontep/volna/releases/tag/v0.8
 
@@ -39,3 +41,8 @@ https://github.com/bokontep/ofsynth
 Currently I test this application on a Xiaomi Mi A2 Lite (It supports pressure!) and a Samsung Galaxy 7 edge (No pressure sensitivity). I would recommend a fairly recent device because the application is quite cpu heavy.
 Maybe someday I will release this on Google Play, who knows...
 Enjoy and as always peace...
+
+
+#Βόλνα, πολυφωνικό-πολυδειγματικό συνθεσάϊζερ για android
+
+Το волна (βόλνα) σημαίνει κύμα στα Ρώσικα και είναι ένα συνθεσάϊζερ που δουλεύει σε κινητά και τάμπλετ με μια σχετικά πρόσφατη έκδοση android (το έχω δοκιμάσει σε Android 8 και Android 10). Η αρχιτεκτονική του είναι πολυφωνική (10 φωνές, όσα και τα δάχτυλα των περισσοτέρων από εμάς). Κάθε φωνή έχει 2 ταλαντωτές οι οποίοι έχουν 256 κυματομορφές. Οι κυματομορφές είναι ημίτονο, τριγωνική, τετραγωνική, πριονωτή και θόρυβος μιξαρισμένες μεταξύ τους και φιλτραρισμένες με ένα χαμηλοπερατό φίλτρο προκειμένου να περιοριστεί το aliasing. Στην εικόνα μπορείτε να δείτε τις κυματομορφές
