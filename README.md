@@ -3,7 +3,7 @@
 (for greek text, scroll down)
 
 For a prebuilt apk you can install on your android device, go to the releases.
-https://github.com/bokontep/volna/releases/tag/v0.8
+https://github.com/bokontep/volna/releases/tag/v0.8c
 
 волна (pronounced volna in English) means wave in Russian. It is a wavetable synthesizer/musical instrument presented as an android application. I made it in order to test some ideas on audio synthesis and ui interface design.
 It utilises a 10 voice architecture with 2 oscillators per voice. The 2 oscillators are wavetable oscillators. The sound is produced using a table with 256 waveforms of 256 samples each.
