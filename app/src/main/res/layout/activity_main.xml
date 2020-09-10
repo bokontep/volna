@@ -150,6 +150,58 @@
                 android:layout_height="wrap_content"
                 android:min="2"
                 android:max="48"/>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Low Register Note Offset"
+                />
+            <EditText
+                android:id="@+id/lowOffsetEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0"
+                />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Middle Register Note Offset"
+                />
+            <EditText
+                android:id="@+id/middleOffsetEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="12"
+                />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="High Register Note Offset"
+                />
+            <EditText
+                android:id="@+id/highOffsetEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="24"
+                />
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="20dp"

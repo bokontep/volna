@@ -13,6 +13,7 @@ public class WaveDisplay extends View {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setupPaint();
+
     }
     public void setupPaint()
     {

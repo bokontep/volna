@@ -13,6 +13,8 @@ import android.media.midi.MidiManager;
 import android.media.midi.MidiReceiver;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -21,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -80,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
     private int delayTime = 0;
     private int delayFeedback = 0;
     private int tet = 12;
+
+    private int lowOffset = 0;
+    private int midOffset = 12;
+    private int highOffset = 24;
     private float tune = 440.0f;
     private float octaveFactor = 2.0f;
     private long settingsPressTime = 5000;
@@ -92,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private Runnable screenUpdater;
     private Scope scope;
+    private EditText lowOffsetEditText;
+    private EditText midOffsetEditText;
+    private EditText highOffsetEditText;
+
     private ToggleButton redToggleButton;
     private ToggleButton legatoToggleButton;
     private Spinner scaleSpinner;
@@ -192,8 +203,12 @@ public class MainActivity extends AppCompatActivity {
         {
             notemap[i]= -1;
         }
+
         prefs = new AppPreferences(this);
         engine = new SynthEngine(this, 44100);
+        lowOffset = prefs.readInt("lowOffset",0);
+        midOffset = prefs.readInt("midOffset",12);
+        highOffset = prefs.readInt("highOffset",24);
         delayLevel = prefs.readInt("delayLevel",0);
         delayTime = prefs.readInt("delayTime",0);
         delayFeedback = prefs.readInt("delayFeedback",0);
@@ -394,6 +409,94 @@ public class MainActivity extends AppCompatActivity {
         this.osc2WaveDisplay = (WaveDisplay) findViewById(R.id.osc2WaveDisplay);
         this.osc2WaveDisplay.setData(engine.getWavetable(osc2Wave));
         this.osc2WaveDisplay.setRed(red);
+        this.lowOffsetEditText = (EditText) findViewById(R.id.lowOffsetEditText);
+        this.midOffsetEditText = (EditText) findViewById(R.id.middleOffsetEditText);
+        this.highOffsetEditText = (EditText) findViewById(R.id.highOffsetEditText);
+        this.lowOffsetEditText.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        try {
+                            lowOffset = Integer.parseInt(lowOffsetEditText.getText().toString(),10);
+                            if(lowOffset<0 || lowOffset>2*tet)
+                            {
+                                lowOffset = 0;
+                            }
+                            prefs.writeInt("lowOffset",lowOffset);
+                        }
+                        catch (Exception e)
+                        {
+                            lowOffset = 0;
+                        }
+                    }
+                }
+        );
+        this.midOffsetEditText.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        try {
+                            midOffset = Integer.parseInt(midOffsetEditText.getText().toString(),10);
+                            if(midOffset<0 || midOffset>2*tet)
+                            {
+                                midOffset = 0;
+                            }
+                            prefs.writeInt("midOffset",midOffset);
+                        }
+                        catch (Exception e)
+                        {
+                            midOffset = 0;
+                        }
+                    }
+                }
+        );
+        this.highOffsetEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                try {
+                    highOffset = Integer.parseInt(highOffsetEditText.getText().toString(),10);
+                    if(highOffset<0 || highOffset>2*tet)
+                    {
+                        highOffset = 0;
+                    }
+                    prefs.writeInt("highOffset",highOffset);
+                }
+                catch (Exception e)
+                {
+                    highOffset = 0;
+                }
+            }
+        });
         //this.osc2WaveDisplay.invalidate();
         SeekBar.OnSeekBarChangeListener onSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -800,6 +903,12 @@ public class MainActivity extends AppCompatActivity {
     }
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        int[] activeIds = new int[10];
+        boolean actionMove = false;
+        for(int i=0;i<activeIds.length;i++)
+        {
+            activeIds[i]=-1;
+        }
         lastTouchEventTime = new java.util.Date().getTime();
         int action = event.getActionMasked();
         int index = event.getActionIndex();
@@ -834,11 +943,11 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < activepointers; i++) {
 
             if (y[i] > 2.0 * height / 3.0f) {
-                offset = 0;
+                offset = lowOffset;
             } else if (y[i] < height / 3.0f) {
-                offset = 24;
+                offset = highOffset;
             } else {
-                offset = 12;
+                offset = midOffset;
             }
             int id = event.getPointerId(i);
 
@@ -846,7 +955,7 @@ public class MainActivity extends AppCompatActivity {
             int oscdist = -((int) (((xNoteScale - x[i] % xNoteScale) / xNoteScale) * 127) - 63);
             scopetext = scopetext + "[" + oscdist + "]";
             int midinote = (rootNote + ((int) x[i] / xNoteScale)) % (11*tet);
-            midinote = (transformNote(midinote) + offset) % (11*tet);
+            midinote = (transformNote(midinote+offset)  ) % (11*tet);
             int factor = (int) height / 3;
             int wi = (int) y[i] % factor;
 
@@ -867,13 +976,13 @@ public class MainActivity extends AppCompatActivity {
                 if(last>=0)
                 {
                     engine.sendMidiNoteOff(0,last,0);
-                    noteOff(0,last%128,0);
+                    midiNoteOff(0,last%128,0);
                     notemap[id] = -1;
                 }
 
                 if(midinote>=0) {
                     engine.sendMidiNoteOn(0, midinote, vel);
-                    noteOn(0,midinote%128, vel);
+                    midiNoteOn(0,midinote%128, vel);
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
 
@@ -887,14 +996,14 @@ public class MainActivity extends AppCompatActivity {
                 if(last>=0)
                 {
                     engine.sendMidiNoteOff(0,last,0);
-                    noteOff(0,last%128,0);
+                    midiNoteOff(0,last%128,0);
 
                     notemap[id] = -1;
                 }
 
                 if(midinote>=0) {
                     engine.sendMidiNoteOn(0, midinote, vel);
-                    noteOn(0,midinote%128,vel);
+                    midiNoteOn(0,midinote%128,vel);
 
                     engine.selectWaveform(0, 0, midinote, waveform1);
                     engine.selectWaveform(0, 1, midinote, waveform2);
@@ -904,6 +1013,8 @@ public class MainActivity extends AppCompatActivity {
             }
             if (action == MotionEvent.ACTION_MOVE )
             {
+                actionMove = true;
+                activeIds[i%10]=id;
                 //scope.printLine("ACTION_MOVE");
                 if (midinote >= 0) {
                     int offset1 = 64 - oscdist;
@@ -923,8 +1034,9 @@ public class MainActivity extends AppCompatActivity {
                     {
                         if(last>=0 && last!=midinote) {
                             engine.sendMidiChangeNote(0, last, midinote, vel);
-                            noteOff(0,last%127,0);
-                            noteOn(0,midinote,vel);
+                            midiNoteOn(0,midinote,vel);
+                            midiNoteOff(0,last%127,0);
+
                         }
                     }
                     else {
@@ -932,8 +1044,8 @@ public class MainActivity extends AppCompatActivity {
                             engine.sendMidiNoteOff(0, last, 0);
 
                             engine.sendMidiNoteOn(0, midinote, vel);
-                            noteOff(0,last%128,0);
-                            noteOn(0,midinote,vel);
+                            midiNoteOff(0,last%128,0);
+                            midiNoteOn(0,midinote,vel);
                         }
                     }
                     if(last>0 && last==midinote) {
@@ -943,28 +1055,29 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     notemap[id]=midinote;
-                    polyAftertouch(0,midinote,vel);
+                    midiPolyAftertouch(0,midinote,vel);
 
-                    sendCC(0,id+1,(waveform1>>1)%128);
+                    midiSendCC(0,id+1,(waveform1>>1)%128);
 
                 }
 
 
             }
 
-            if (action == MotionEvent.ACTION_POINTER_UP && id==index)
+            if (action == MotionEvent.ACTION_POINTER_UP && id==index && id>=0)
             {
+
                 //scope.printLine("ACTION_POINTER_UP "+id);
 
 
                 engine.sendMidiNoteOff(0, last, 0);
                 engine.sendMidiNoteOff(0, midinote, 0);
-                noteOff(0,last%128,0);
-                noteOff(0,midinote%128,0);
+                midiNoteOff(0,last%128,0);
+                midiNoteOff(0,midinote%128,0);
 
-
-                notemap[id]=-1;
                 scope.unsetMarker("" + index);
+                notemap[id]=-1;
+
 
 
             }
@@ -975,7 +1088,7 @@ public class MainActivity extends AppCompatActivity {
                     if(notemap[n]>0)
                     {
                         engine.sendMidiNoteOff(0, notemap[n], 0);
-                        noteOff(0,notemap[n]%127,0);
+                        midiNoteOff(0,notemap[n]%127,0);
                     }
 
                     scope.unsetMarker("" + n);
@@ -994,6 +1107,7 @@ public class MainActivity extends AppCompatActivity {
             scopetext = scopetext+" L";
         }
         scope.setText(scopetext);
+
         return true;//return super.onTouchEvent(event);
     }
 
@@ -1068,18 +1182,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void noteOff(int channel, int pitch, int velocity) {
+    private void midiNoteOff(int channel, int pitch, int velocity) {
         midiCommand(MidiConstants.STATUS_NOTE_OFF | channel, pitch, velocity);
     }
 
-    private void noteOn(int channel, int pitch, int velocity) {
+    private void midiNoteOn(int channel, int pitch, int velocity) {
         midiCommand(MidiConstants.STATUS_NOTE_ON | channel, pitch, velocity);
     }
-    private void sendCC(int channel, int cc, int data)
+    private void midiSendCC(int channel, int cc, int data)
     {
         midiCommand(MidiConstants.STATUS_CONTROL_CHANGE | channel, cc, data);
     }
-    private void polyAftertouch(int channel, int pitch, int velocity)
+    private void midiPolyAftertouch(int channel, int pitch, int velocity)
     {
         midiCommand(MidiConstants.STATUS_POLYPHONIC_AFTERTOUCH | channel, pitch, velocity);
     }
