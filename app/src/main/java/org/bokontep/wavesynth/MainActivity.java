@@ -963,7 +963,13 @@ public class MainActivity extends AppCompatActivity {
             int waveform2 = (this.osc2Wave + (wi * this.osc2WaveControl) / factor) % 256;
             engine.selectWaveform(0, 0, midinote, waveform1);
             engine.selectWaveform(0, 1, midinote, waveform2);
-            int tmp = ((int) (127.0 * event.getPressure(i) * 4));
+            float pressure = event.getPressure();
+            if(pressure<0.25f)
+            {
+                pressure = 0.25f;
+            }
+
+            int tmp = ((int) (127.0 * pressure * 4));
             vel = tmp > 127 ? 127 : tmp;
             scopetext = scopetext + " " + midinote;
             if (vel >= 0) {
