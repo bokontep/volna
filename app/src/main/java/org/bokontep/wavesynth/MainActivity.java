@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.VolumeShaper;
 import android.media.midi.MidiDevice;
 import android.media.midi.MidiDeviceInfo;
 import android.media.midi.MidiManager;
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView osc2WaveTextView;
     private TextView osc1WaveControlTextView;
     private TextView osc2WaveControlTextView;
+    private TextView tvVersion;
     private Button settingsButton;
     private Button recButton;
     private Button playButton;
@@ -251,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
         paint = new Paint();
         paint.setColor(0xffff0000);
         mHandler = new Handler();
+        tvVersion = findViewById(R.id.tv_version);
+        tvVersion.setText("волна v."+BuildConfig.VERSION_NAME);
         redToggleButton = (ToggleButton) findViewById(R.id.redToggleButton);
         redToggleButton.setOnCheckedChangeListener(
                 new CompoundButton.OnCheckedChangeListener() {

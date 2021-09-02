@@ -37,6 +37,7 @@
                 android:text="ВОКОИТЕР"/>
 
             <TextView
+                android:id="@+id/tv_version"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="30sp"
