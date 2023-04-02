@@ -79,10 +79,12 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       release(block);
       */
     }
+
     void onErrorBeforeClose(oboe::AudioStream *oboeStream, oboe::Result error)
     {
 
     }
+
     void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result error)
     {
         oboeInit();
@@ -286,6 +288,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
       
     }
 
+
     float rampUp(int sample)
     {
         float ret = upMaxValue;
@@ -318,6 +321,7 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
 		{
 			mSynthVoice[i].SetOsc1ADSR(a,d,s,r);
 			mSynthVoice[i].SetOsc2ADSR(a,d,s,r);
+            mSynthVoice[i].SetNoiseADSR(a,d,s,r);
 		}
 	}
 	void setOsc1Wave(uint8_t w)
@@ -475,6 +479,30 @@ template <int numvoices,int WAVEFORM_COUNT, int WTLEN> class VAEngine: public ob
     void SetDelayFeedback(float feedback)
     {
         delay->SetFeedback(feedback);
+    }
+
+    void SetOsc1Volume(float volume)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            mSynthVoice[i].SetOsc1Volume(volume*127);
+        }
+    }
+
+    void SetOsc2Volume(float volume)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            mSynthVoice[i].SetOsc2Volume(volume*127);
+        }
+    }
+
+    void SetNoiseVolume(float volume)
+    {
+        for(int i=0;i<numvoices;i++)
+        {
+            mSynthVoice[i].SetNoiseVolume(volume*127);
+        }
     }
     private:
       SynthVoice mSynthVoice[numvoices];

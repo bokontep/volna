@@ -219,7 +219,30 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Legato"
+                android:text="Legato" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+
+                />
+            <TextView
+                android:id="@+id/osc1VolumeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Osc1 Volume" />
+
+            <SeekBar
+                android:id="@+id/osc1VolumeSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
                 />
             <TextView
                 android:id="@+id/osc1AttackText"
@@ -285,6 +308,24 @@
 
             <SeekBar
                 android:id="@+id/osc1ReleaseSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/osc2VolumeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Osc2 Attack" />
+
+            <SeekBar
+                android:id="@+id/osc2VolumeSeekBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:min="0"
@@ -367,6 +408,98 @@
                 android:layout_height="20dp"
 
                 />
+            <TextView
+                android:id="@+id/oscNoiseText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Noise Volume" />
+
+            <SeekBar
+                android:id="@+id/noiseVolumeSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/noiseAttackText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Noise Attack" />
+
+            <SeekBar
+                android:id="@+id/noiseAttackSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/noiseDecayText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Noise Decay" />
+
+            <SeekBar
+                android:id="@+id/noiseDecaySeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/noiseSustainText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Noise Sustain" />
+
+            <SeekBar
+                android:id="@+id/noiseSustainSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+            <TextView
+                android:id="@+id/noiseReleaseText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:text="Noise Release"
+                />
+
+            <SeekBar
+                android:id="@+id/noiseReleaseSeekBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:min="0"
+                android:max="127"/>
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+
+                />
+
             <TextView
                 android:id="@+id/oscSpreadText"
                 android:layout_width="match_parent"

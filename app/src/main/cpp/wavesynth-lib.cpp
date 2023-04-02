@@ -204,11 +204,11 @@ Java_org_bokontep_wavesynth_SynthEngine_sendMidiCC(JNIEnv *env,
 extern "C"
 JNIEXPORT jint JNICALL
 Java_org_bokontep_wavesynth_SynthEngine_sendMidiNoteOn(
-                                                        JNIEnv * env,
-                                                        jobject thiz,
-                                                        jint channel,
-                                                        jint note,
-                                                        jint velocity
+                        JNIEnv * env,
+                        jobject thiz,
+                        jint channel,
+                        jint note,
+                        jint velocity
 )
 {
     engine->handleNoteOn(channel,note, velocity);
@@ -357,5 +357,30 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_org_bokontep_wavesynth_SynthEngine_setDelayFeedback(JNIEnv *env, jobject thiz, jint feedback) {
     engine->SetDelayFeedback(0.99*((float)feedback/255.0));
+    return 0;
+}
+
+
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setOsc1Volume(JNIEnv *env, jobject thiz, jint osc1_volume) {
+    // TODO: implement setOsc1Volume()
+    engine->SetOsc1Volume(((float)osc1_volume)/127.0);
+    return 0;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setOsc2Volume(JNIEnv *env, jobject thiz, jint osc2_volume) {
+    // TODO: implement setOsc2Volume()
+    engine->SetOsc2Volume(((float)osc2_volume)/127.0);
+    return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_org_bokontep_wavesynth_SynthEngine_setNoiseVolume(JNIEnv *env, jobject thiz, jint noise_volume) {
+    // TODO: implement setOsc2Volume()
+    engine->SetNoiseVolume(((float)noise_volume)/127.0);
     return 0;
 }

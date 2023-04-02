@@ -205,7 +205,7 @@ public class Scope extends View {
         this.w = w;
         this.h = h;
         if(data!=null) {
-            xstep = (w / data.length);
+            xstep = (w / data.length+1);
             ystep = (h/2.0f);
             xstart = 0;
             ystart = (h/2.0f);

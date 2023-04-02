@@ -84,7 +84,9 @@ public class MainActivity extends AppCompatActivity {
     private int delayTime = 0;
     private int delayFeedback = 0;
     private int tet = 12;
-
+    private int osc1Volume = 127;
+    private int osc2Volume = 127;
+    private int noiseVolume = 0;
     private int lowOffset = 0;
     private int midOffset = 12;
     private int highOffset = 24;
@@ -120,6 +122,11 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar osc2DecaySeekBar;
     private SeekBar osc2SustainSeekBar;
     private SeekBar osc2ReleaseSeekBar;
+    private SeekBar noiseAttackSeekBar;
+    private SeekBar noiseDecaySeekBar;
+    private SeekBar noiseSustainSeekBar;
+    private SeekBar noiseReleaseSeekBar;
+
     private SeekBar maxSpreadSeekBar;
     private SeekBar osc1WaveSeekBar;
     private SeekBar osc1WaveControlSeekBar;
@@ -129,13 +136,18 @@ public class MainActivity extends AppCompatActivity {
     private SeekBar delayTimeSeekBar;
     private SeekBar delayFeedbackSeekBar;
     private SeekBar gridSizeSeekBar;
+    private SeekBar osc1VolumeSeekBar;
+    private SeekBar osc2VolumeSeekBar;
+    private SeekBar noiseVolumeSeekBar;
     private TextView tuneTextView;
     private TextView tetTextView;
     private TextView octaveFactorTextView;
+    private TextView osc1VolumeTextView;
     private TextView osc1AttackTextView;
     private TextView osc1DecayTextView;
     private TextView osc1SustainTextView;
     private TextView osc1ReleaseTextView;
+    private TextView osc2VolumeTextView;
     private TextView osc2AttackTextView;
     private TextView osc2DecayTextView;
     private TextView osc2SustainTextView;
@@ -214,6 +226,9 @@ public class MainActivity extends AppCompatActivity {
         delayLevel = prefs.readInt("delayLevel",0);
         delayTime = prefs.readInt("delayTime",0);
         delayFeedback = prefs.readInt("delayFeedback",0);
+        osc1Volume = prefs.readInt("osc1Volume",127);
+        osc2Volume = prefs.readInt("osc2Volume", 127);
+        noiseVolume = prefs.readInt("noiseVolume",0);
         engine.initAudio();
 
         tune = (prefs.readInt("tune", 4400) / 10.0f);
@@ -233,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
         engine.initSynthParameters();
         engine.setOsc1Volume(prefs.readInt("osc1Volume", 127));
         engine.setOsc2Volume(prefs.readInt("osc2Volume", 127));
+        engine.setNoiseVolume(prefs.readInt("noiseVolume",0));
         engine.setOsc1Attack(prefs.readInt("osc1Attack", 10));
         engine.setOsc1Decay(prefs.readInt("osc1Decay", 0));
         engine.setOsc1Sustain(prefs.readInt("osc1Sustain", 127));
@@ -241,6 +257,10 @@ public class MainActivity extends AppCompatActivity {
         engine.setOsc2Decay(prefs.readInt("osc2Decay", 0));
         engine.setOsc2Sustain(prefs.readInt("osc2Sustain", 127));
         engine.setOsc2Release(prefs.readInt("osc2Release", 0));
+        engine.setNoiseAttack(prefs.readInt("noiseAttack",0));
+        engine.setNoiseDecay(prefs.readInt("noiseDecay",0));
+        engine.setNoiseSustain(prefs.readInt("noiseSustain",0));
+        engine.setNoiseRelease(prefs.readInt("noiseRelease",0));
         engine.setDelayLevel(delayLevel);
         engine.setDelayTime(delayTime);
         engine.setDelayFeedback(delayFeedback);
@@ -342,7 +362,8 @@ public class MainActivity extends AppCompatActivity {
         this.octaveFactorSeekBar = (SeekBar)findViewById(R.id.octaveFactorSeekBar);
         this.octaveFactorSeekBar.setProgress((int)octaveFactor*1000);
 
-
+        this.osc1VolumeSeekBar = (SeekBar) findViewById(R.id.osc1VolumeSeekBar);
+        this.osc1VolumeSeekBar.setProgress(osc1Volume);
         this.osc1AttackSeekBar = (SeekBar) findViewById(R.id.osc1AttackSeekBar);
         this.osc1AttackSeekBar.setProgress(engine.getOsc1Attack());
         this.osc1DecaySeekBar = (SeekBar) findViewById(R.id.osc1DecaySeekBar);
@@ -351,6 +372,8 @@ public class MainActivity extends AppCompatActivity {
         this.osc1SustainSeekBar.setProgress(engine.getOsc2Sustain());
         this.osc1ReleaseSeekBar = (SeekBar) findViewById(R.id.osc1ReleaseSeekBar);
         this.osc1ReleaseSeekBar.setProgress(engine.getOsc2Release());
+        this.osc2VolumeSeekBar = (SeekBar) findViewById(R.id.osc2VolumeSeekBar);
+        this.osc2VolumeSeekBar.setProgress(osc2Volume);
         this.osc2AttackSeekBar = (SeekBar) findViewById(R.id.osc2AttackSeekBar);
         this.osc2AttackSeekBar.setProgress(engine.getOsc2Attack());
         this.osc2DecaySeekBar = (SeekBar) findViewById(R.id.osc2DecaySeekBar);
@@ -359,6 +382,16 @@ public class MainActivity extends AppCompatActivity {
         this.osc2SustainSeekBar.setProgress(engine.getOsc2Sustain());
         this.osc2ReleaseSeekBar = (SeekBar) findViewById(R.id.osc2ReleaseSeekBar);
         this.osc2ReleaseSeekBar.setProgress(engine.getOsc2Release());
+        this.noiseVolumeSeekBar = (SeekBar) findViewById(R.id.noiseVolumeSeekBar);
+        this.noiseVolumeSeekBar.setProgress(noiseVolume);
+        this.noiseAttackSeekBar = (SeekBar) findViewById(R.id.noiseAttackSeekBar);
+        this.noiseAttackSeekBar.setProgress(engine.getNoiseAttack());
+        this.noiseDecaySeekBar = (SeekBar) findViewById(R.id.noiseDecaySeekBar);
+        this.noiseDecaySeekBar.setProgress(engine.getNoiseDecay());
+        this.noiseSustainSeekBar = (SeekBar) findViewById(R.id.noiseSustainSeekBar);
+        this.noiseSustainSeekBar.setProgress(engine.getNoiseSustain());
+        this.noiseReleaseSeekBar = (SeekBar) findViewById(R.id.noiseReleaseSeekBar);
+        this.noiseReleaseSeekBar.setProgress(engine.getNoiseRelease());
         this.maxSpreadSeekBar = (SeekBar) findViewById(R.id.maxSpreadSeekBar);
         this.maxSpreadSeekBar.setProgress(this.maxSpread);
         this.gridSizeSeekBar = (SeekBar) findViewById(R.id.gridSizeSeekBar);
@@ -379,6 +412,8 @@ public class MainActivity extends AppCompatActivity {
         this.delayFeedbackSeekBar.setProgress(delayFeedback);
         this.tuneTextView = (TextView) findViewById(R.id.tuneText);
         this.tuneTextView.setText("A frequency (Hz):" + tune);
+        this.osc1VolumeTextView = (TextView) findViewById(R.id.osc1VolumeText);
+        this.osc1VolumeTextView.setText("osc1Volume:"+osc1Volume);
         this.osc1AttackTextView = (TextView) findViewById(R.id.osc1AttackText);
         this.osc1AttackTextView.setText("osc1Attack:" + engine.getOsc1Attack());
         this.osc1DecayTextView = (TextView) findViewById(R.id.osc1DecayText);
@@ -387,6 +422,8 @@ public class MainActivity extends AppCompatActivity {
         this.osc1SustainTextView.setText("osc1Sustain:" + engine.getOsc1Sustain());
         this.osc1ReleaseTextView = (TextView) findViewById(R.id.osc1ReleaseText);
         this.osc1ReleaseTextView.setText("osc1Release:" + engine.getOsc1Release());
+        this.osc2VolumeTextView = (TextView) findViewById(R.id.osc2VolumeText);
+        this.osc2VolumeTextView.setText("osc2Volume:"+osc2Volume);
         this.osc2AttackTextView = (TextView) findViewById(R.id.osc2AttackText);
         this.osc2AttackTextView.setText("osc2Attack:" + engine.getOsc2Attack());
         this.osc2DecayTextView = (TextView) findViewById(R.id.osc2DecayText);
@@ -527,6 +564,12 @@ public class MainActivity extends AppCompatActivity {
                         engine.setOctaveFactor(octaveFactor);
                         prefs.writeInt("octaveFactor",(int)(octaveFactor*1000));
                         break;
+                    case R.id.osc1VolumeSeekBar:
+                        osc1Volume = progress;
+                        osc1VolumeTextView.setText("osc1Volume:"+osc1Volume);
+                        prefs.writeInt("osc1Volume",osc1Volume);
+                        engine.setOsc1Volume(osc1Volume);
+                        break;
                     case R.id.osc1AttackSeekBar:
                         engine.setOsc1Attack(progress);
                         osc1AttackTextView.setText("osc1Attack:" + engine.getOsc1Attack());
@@ -550,6 +593,12 @@ public class MainActivity extends AppCompatActivity {
                         osc1ReleaseTextView.setText("osc1Release:" + engine.getOsc1Release());
                         prefs.writeInt("osc1Release", engine.getOsc1Release());
                         engine.sendMidiCC(0, 21, engine.getOsc1Release());
+                        break;
+                    case R.id.osc2VolumeSeekBar:
+                        osc2Volume = progress;
+                        osc2VolumeTextView.setText("osc2Volume:"+osc2Volume);
+                        prefs.writeInt("osc2Volume",osc2Volume);
+                        engine.setOsc2Volume(progress);
                         break;
                     case R.id.osc2AttackSeekBar:
                         engine.setOsc2Attack(progress);
@@ -578,6 +627,32 @@ public class MainActivity extends AppCompatActivity {
                         prefs.writeInt("osc2Release", engine.getOsc2Release());
 
                         engine.sendMidiCC(0, 25, engine.getOsc2Release());
+                        break;
+                    case R.id.noiseVolumeSeekBar:
+                        noiseVolume = progress;
+                        prefs.writeInt("noiseVolume",noiseVolume);
+                        engine.setNoiseVolume(noiseVolume);
+                        break;
+                    case R.id.noiseAttackSeekBar:
+                        engine.setNoiseAttack(progress);
+                        prefs.writeInt("noiseAttack", engine.getNoiseAttack());
+
+                        engine.sendMidiCC(0, 79, engine.getNoiseAttack());
+                        break;
+                    case R.id.noiseDecaySeekBar:
+                        engine.setNoiseDecay(progress);
+                        prefs.writeInt("noiseDecay", engine.getNoiseDecay());
+                        engine.sendMidiCC(0, 80, engine.getNoiseDecay());
+                        break;
+                    case R.id.noiseSustainSeekBar:
+                        engine.setNoiseSustain(progress);
+                        prefs.writeInt("noiseSustain", engine.getNoiseSustain());
+                        engine.sendMidiCC(0, 81, engine.getNoiseSustain());
+                        break;
+                    case R.id.noiseReleaseSeekBar:
+                        engine.setNoiseRelease(progress);
+                        prefs.writeInt("noiseRelease", engine.getNoiseRelease());
+                        engine.sendMidiCC(0, 82, engine.getNoiseRelease());
                         break;
                     case R.id.maxSpreadSeekBar:
                         maxSpread = progress;
@@ -651,14 +726,21 @@ public class MainActivity extends AppCompatActivity {
         this.tuneSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.tetSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.octaveFactorSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.osc1VolumeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1AttackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1DecaySeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1SustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc1ReleaseSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.osc2VolumeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2AttackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2DecaySeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2SustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.osc2ReleaseSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.noiseVolumeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.noiseAttackSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.noiseDecaySeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.noiseSustainSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
+        this.noiseReleaseSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.maxSpreadSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
         this.gridSizeSeekBar.setOnSeekBarChangeListener(onSeekBarChangeListener);
 
@@ -960,8 +1042,22 @@ public class MainActivity extends AppCompatActivity {
             scopetext = scopetext + "[" + oscdist + "]";
             int midinote = (rootNote + ((int) x[i] / xNoteScale)) % (11*tet);
             midinote = (transformNote(midinote+offset)  ) % (11*tet);
-            int factor = (int) height / 3;
-            int wi = (int) y[i] % factor;
+            int factor = 300;
+
+            try {
+                factor = (int) (height / 3.0);
+            }
+            catch (Exception e)
+            {
+
+            }
+            if(factor<=0)
+            {
+                factor =1;
+            }
+
+
+            int wi = (int) (y[i] % factor);
 
             int waveform1 = (this.osc1Wave + (wi * this.osc1WaveControl) / factor) % 256;
             int waveform2 = (this.osc2Wave + (wi * this.osc2WaveControl) / factor) % 256;

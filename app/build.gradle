@@ -10,14 +10,23 @@ def getCommitHash = { ->
 }
 android {
 
-    compileSdkVersion 29
-    buildToolsVersion "30.0.1"
+    signingConfigs {
+        release {
+        storeFile file('C:\\Users\\mprizols\\gplaykeystore\\gplayks2.jks')
+            storePassword 'k0+1+$0$'
+            keyAlias 'volnakey1'
+            keyPassword 'k0+1+$0$'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId "org.bokontep.wavesynth"
         minSdkVersion 23
-        targetSdkVersion 29
-        versionCode 2
+        targetSdkVersion 30
+        versionCode 3
         versionName "0.9-"+getCommitHash()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -36,6 +45,7 @@ android {
             jniDebuggable false
 
             multiDexEnabled false
+            signingConfig signingConfigs.release
             externalNativeBuild
 
         }

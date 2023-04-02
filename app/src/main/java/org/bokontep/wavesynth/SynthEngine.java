@@ -44,6 +44,10 @@ public class SynthEngine {
         sendMidiCC(0,23, getOsc2Decay());
         sendMidiCC(0,24, getOsc2Sustain());
         sendMidiCC(0,25, getOsc2Release());
+        sendMidiCC(0,79, getNoiseAttack());
+        sendMidiCC(0,80, getNoiseDecay());
+        sendMidiCC(0,81,getNoiseSustain());
+        sendMidiCC(0,82,getNoiseRelease());
 
     }
     private Context context;
@@ -57,6 +61,11 @@ public class SynthEngine {
     private int osc2Decay = 0;
     private int osc2Sustain = 127;
     private int osc2Release =0;
+    private int noiseVolume = 0;
+    private int noiseAttack = 0;
+    private int noiseDecay = 0;
+    private int noiseSustain =0;
+    private int noiseRelease = 0;
     public native int initVAEngine(int sampleRate);
     public native int setVAEngineDefaultStreamValues(int sampleRate, int framesPerBurst);
     public native int sendMidiCC(int channel, int cc, int data);
@@ -77,7 +86,9 @@ public class SynthEngine {
     public native int setDelayLevel(int level);
     public native int setDelayTime(int time);
     public native int setDelayFeedback(int feedback);
-
+    public native int setOsc1Volume(int osc1Volume);
+    public native int setOsc2Volume(int osc2Volume);
+    public native int setNoiseVolume(int noiseVolume);
     public int getSampleRate() {
         return sampleRate;
     }
@@ -90,9 +101,7 @@ public class SynthEngine {
         return osc1Volume;
     }
 
-    public void setOsc1Volume(int osc1Volume) {
-        this.osc1Volume = osc1Volume;
-    }
+
 
     public int getOsc1Attack() {
         return osc1Attack;
@@ -130,9 +139,6 @@ public class SynthEngine {
         return osc2Volume;
     }
 
-    public void setOsc2Volume(int osc2Volume) {
-        this.osc2Volume = osc2Volume;
-    }
 
     public int getOsc2Attack() {
         return osc2Attack;
@@ -165,4 +171,25 @@ public class SynthEngine {
     public void setOsc2Release(int osc2Release) {
         this.osc2Release = osc2Release;
     }
+
+    public void setNoiseAttack(int noiseAttack)
+    {
+        this.noiseAttack = noiseAttack;
+    }
+    public void setNoiseDecay(int noiseDecay)
+    {
+        this.noiseDecay = noiseDecay;
+    }
+    public void setNoiseSustain(int noiseSustain)
+    {
+        this.noiseSustain = noiseSustain;
+    }
+    public void setNoiseRelease(int noiseRelease)
+    {
+        this.noiseRelease = noiseRelease;
+    }
+    public int getNoiseAttack(){return noiseAttack;}
+    public int getNoiseDecay(){return noiseDecay;}
+    public int getNoiseSustain(){return noiseSustain;}
+    public int getNoiseRelease(){return noiseRelease;}
 }

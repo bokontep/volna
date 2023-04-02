@@ -4,7 +4,7 @@
 #include "FloatWaveTableOsc.h"
 #include "ADSR.h"
 #include "LowPass.h"
-
+#include "mtwister.h"
 
 class SynthVoice  {
 public:
@@ -15,6 +15,7 @@ public:
         this->pwm = 0.5;
 		this->vol1 = 1.0;
 		this->vol2 = 1.0;
+        this->volnoise = 0.0;
         this->fmod1 = 1.0;
         this->fmod2 = 1.0;
         this->fmod3 = 0.0;
@@ -59,6 +60,7 @@ public:
         osc[1].SetFrequency(freq2,sampleRate);
         adsr[0].Gate(1);
         adsr[1].Gate(1);
+        adsr[2].Gate(1);
         osc[0].ResetPhase();
         osc[1].ResetPhase();
     }
@@ -118,6 +120,10 @@ public:
     void SetOsc2ADSR(uint8_t a, float d, float s, float r)
     {
         adsr[1].SetADSR(a,d,s,r);
+    }
+    void SetNoiseADSR(uint8_t a, float d, float s, float r)
+    {
+        adsr[2].SetADSR(a,d,s,r);
     }
     void SetFmod1(uint8_t fmod)
     {
@@ -342,7 +348,41 @@ public:
 			  }
 
 			  break;
+          case 78: //OSC 1 Noise volume
+              if (value < 64)
+              {
+                  int newval = GetNoiseVolume() + value;
+                  if (newval > 127)
+                  {
+                      newval = 127;
+                  }
+                  SetNoiseVolume(newval);
 
+              }
+              else if (value > 64)
+              {
+                  int newval = GetNoiseVolume() - (128 - value);
+                  if (newval < 0)
+                  {
+                      newval = 0;
+                  }
+                  SetNoiseVolume(newval);
+              }
+
+              break;
+          case 79: // Noise Attack
+              adsr[2].SetAttackMidi(value);
+
+              break;
+          case 80: // Noise Decay
+          adsr[2].SetDecayMidi(value);
+          break;
+          case 81: // Noise Sustain
+          adsr[2].SetSustainMidi(value);
+          break;
+          case 82: // Noise Release
+          adsr[2].SetReleaseMidi(value);
+          break;
       }
 
       //AudioInterrupts();
@@ -409,6 +449,18 @@ public:
 	{
 		return (uint8_t)(vol2*127.0);
 	}
+
+    void SetNoiseVolume(uint8_t volume)
+    {
+        volnoise = ((float)volume)/127.0;
+    }
+
+    uint8_t GetNoiseVolume()
+    {
+        return (uint8_t)(volnoise*127.0);
+    }
+
+
     void MidiOsc1Wave(uint8_t newwave)
     {
       osc[0].SetWaveTable(newwave);
@@ -435,11 +487,25 @@ public:
     {
       if(modulation<=0.01)
       {
-        return 0.5*(lowpass.Process(velocity*adsr[0].Process()*vol1*osc[0].Process()*fmod1+velocity*adsr[1].Process()*vol2*osc[1].Process()*fmod2));
+        return 0.5*(lowpass.Process(
+                velocity*adsr[0].Process()*vol1*osc[0].Process()*fmod1+
+                velocity*adsr[1].Process()*vol2*osc[1].Process()*fmod2+
+                velocity*adsr[2].Process()*volnoise* genRand(&rnd)
+                ));
+
       }
       else
       {
-        return  0.5*lowpass.Process((velocity*adsr[0].Process()*vol1*osc[0].Process()*fmod1) + (velocity*adsr[1].Process()*vol2*osc[1].Process()*fmod2) + (velocity*(adsr[0].Process()*vol1*osc[0].Process()*vol2*osc[1].Process()*fmod3)));
+        return  0.5*(
+                lowpass.Process(
+                        (velocity*adsr[0].Process()*vol1*osc[0].Process()*fmod1) +
+                        (velocity*adsr[1].Process()*vol2*osc[1].Process()*fmod2) +
+                        (velocity*adsr[2].Process()*volnoise* genRand(&rnd)) +
+                        (velocity*(adsr[0].Process()*vol1*osc[0].Process()*vol2*osc[1].Process()*fmod3))
+
+
+                        )
+                        );
       }
     }
     bool IsPlaying()
@@ -460,10 +526,11 @@ public:
 	}
 protected:
     FloatWaveTableOsc osc[2];
-    ADSR adsr[2];
+    ADSR adsr[3];
     FloatWaveTableOsc lfo[2];
 	float vol1;
 	float vol2;
+    float volnoise;
     float sampleRate;
     float freq1;
     float freq2;
@@ -481,6 +548,7 @@ protected:
     uint8_t wt2_idx;
 	float tet = 12.0;
 	float tune = 440.0;
+    MTRand rnd = seedRand(1337);
 };
 
 #endif
